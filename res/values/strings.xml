@@ -9,13 +9,20 @@
     <string name="dump_start">Capture</string>
     <string name="dump_stop">Stop</string>
     <string name="analyze">Analyze</string>
-    <string name="input_pkg_name">Input the App name:</string>
-    <string name="input_pkg_name_hint">com.UCMobile</string>
+    <string name="select_pkg_name">Input the App name:</string>
     <string name="set_pkg_name">Set</string>
+    <string name="select_pkg_type">Select the App type</string>
     <string name="accessed_servers">Accessed servers:</string>
     <string name="no_result">null</string>
     <string name="title_activity_net_quality_indicators">Net Quality Indicators</string>
     <string name="title_activity_packet_details">Packet Details</string>
     <string name="processing_hint">Processing</string>
+    <string name="description_icon">Icon</string>
+
+    <string-array name="pkg_types">
+        <item>web</item>
+        <item>download</item>
+        <item>video</item>
+    </string-array>
 
 </resources>

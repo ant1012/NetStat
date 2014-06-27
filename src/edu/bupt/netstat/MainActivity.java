@@ -1,21 +1,30 @@
 package edu.bupt.netstat;
 
-import edu.bupt.netstat.pcap.DumpHelper;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnKeyListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.SimpleAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
+import edu.bupt.netstat.pcap.DumpHelper;
 
 /**
  * MainActivity
@@ -31,8 +40,13 @@ public class MainActivity extends Activity implements OnClickListener {
     private Button btDumpStart;
     private Button btDumpStop;
     private Button btAnalyze;
-    private EditText etPkgName;
+    private Spinner spPkgType;
+    private Spinner spPkgName;
     private TextView tvIpList;
+    private ArrayAdapter adapterPkgType;
+    private SimpleAdapter adapterPkgName;
+    private List<HashMap<String, Object>> appList;
+    private int appSelected = 0;
 
     private DumpHelper helper;
 
@@ -46,7 +60,6 @@ public class MainActivity extends Activity implements OnClickListener {
         setContentView(R.layout.activity_main);
 
         tvFileLength = (TextView) findViewById(R.id.textview_file_length);
-        etPkgName = (EditText) findViewById(R.id.edittext_pkg_name);
         tvIpList = (TextView) findViewById(R.id.textview_ip_list);
 
         btDumpStart = (Button) findViewById(R.id.button_dump_start);
@@ -56,8 +69,37 @@ public class MainActivity extends Activity implements OnClickListener {
         btDumpStart.setOnClickListener(this);
         btDumpStop.setOnClickListener(this);
         btAnalyze.setOnClickListener(this);
-
         btAnalyze.setClickable(false);
+
+        spPkgType = (Spinner) findViewById(R.id.spinner_pkg_type);
+        adapterPkgType = ArrayAdapter.createFromResource(this,
+                R.array.pkg_types, android.R.layout.simple_spinner_item);
+        adapterPkgType
+                .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spPkgType.setAdapter(adapterPkgType);
+
+        appList = getInstalledApps(false);
+        spPkgName = (Spinner) findViewById(R.id.spinner_pkg_name);
+        adapterPkgName = new SimpleAdapter(this, appList,
+                android.R.layout.simple_list_item_1,
+                new String[] { "app_title" }, new int[] { android.R.id.text1 });
+        spPkgName.setAdapter(adapterPkgName);
+        spPkgName.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1,
+                    int arg2, long arg3) {
+                appSelected = arg2;
+                Log.v(TAG,
+                        "selected package "
+                                + appList.get(arg2).get("app_package")
+                                        .toString());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+            }
+        });
     }
 
     /**
@@ -97,8 +139,8 @@ public class MainActivity extends Activity implements OnClickListener {
         switch (v.getId()) {
         case R.id.button_dump_start:
             handler.post(runnable);
-            helper = new DumpHelper(MainActivity.this, etPkgName.getText()
-                    .toString());
+            helper = new DumpHelper(MainActivity.this, appList.get(appSelected)
+                    .get("app_package").toString());
             helper.startCapture();
 
             btAnalyze.setClickable(true);
@@ -110,6 +152,8 @@ public class MainActivity extends Activity implements OnClickListener {
         case R.id.button_analyze:
             Intent i = new Intent(MainActivity.this,
                     NetQualityIndicatorsActivity.class);
+            i.putExtra(NetQualityIndicatorsActivity.PKG_TYPE,
+                    spPkgType.getSelectedItemPosition());
             i.putExtra(NetQualityIndicatorsActivity.LOCALIP,
                     helper.getLocalIp());
             startActivity(i);
@@ -162,4 +206,36 @@ public class MainActivity extends Activity implements OnClickListener {
         }
 
     };
+
+    /**
+     * @author zzz
+     * 
+     */
+    private List<HashMap<String, Object>> getInstalledApps(
+            boolean getSysPackages) {
+        List<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
+
+        List<PackageInfo> pkgs = getPackageManager().getInstalledPackages(0);
+        for (int i = 0; i < pkgs.size(); i++) {
+            PackageInfo pkg = pkgs.get(i);
+            if (!getSysPackages
+                    && (pkg.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) > 0) {
+                continue;
+            }
+            String label = pkg.applicationInfo.loadLabel(getPackageManager())
+                    .toString();
+            String version = pkg.versionName;
+            String packageName = pkg.packageName;
+            // Drawable icon =
+            // pkg.applicationInfo.loadIcon(getPackageManager());
+
+            HashMap<String, Object> map = new HashMap<String, Object>();
+            map.put("app_title", label + " " + version);
+            map.put("app_package", packageName);
+            // map.put("app_icon", icon);
+            Log.v(TAG, "find package " + packageName);
+            list.add(map);
+        }
+        return list;
+    }
 }

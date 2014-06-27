@@ -66,30 +66,25 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/medium"
-            android:text="@string/input_pkg_name" />
+            android:text="@string/select_pkg_name" />
 
-        <RelativeLayout
+        <Spinner
+            android:id="@+id/spinner_pkg_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="@dimen/medium" >
+            android:paddingTop="@dimen/medium" />
 
-            <!--
-            <Button
-                android:id="@+id/button_pkg_name"
-                android:layout_alignParentRight="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/set_pkg_name" />
-            -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/medium"
+            android:text="@string/select_pkg_type" />
 
-            <EditText
-                android:id="@+id/edittext_pkg_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/input_pkg_name_hint"
-                android:singleLine="true"
-                android:text="@string/input_pkg_name_hint" />
-        </RelativeLayout>
+        <Spinner
+            android:id="@+id/spinner_pkg_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/medium" />
 
         <TextView
             android:layout_width="match_parent"

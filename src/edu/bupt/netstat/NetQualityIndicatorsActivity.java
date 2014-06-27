@@ -16,7 +16,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import edu.bupt.netstat.analyze.OnReadComplete;
 import edu.bupt.netstat.analyze.PacketReader;
-import edu.bupt.netstat.analyze.ScoreStatistics;
+import edu.bupt.netstat.analyze.ScoreStatisticsFactory;
+import edu.bupt.netstat.analyze.ScoreStatisticsSuper;
 import edu.bupt.netstat.pcap.DumpHelper;
 
 /**
@@ -30,6 +31,7 @@ public class NetQualityIndicatorsActivity extends Activity {
 
     private static final int READ_COMPLETE = 1;
     public static final String LOCALIP = "localip";
+    public static final String PKG_TYPE = "pkg_type";
 
     DecimalFormat df = new DecimalFormat("#.###");
 
@@ -37,6 +39,7 @@ public class NetQualityIndicatorsActivity extends Activity {
 
     private PacketReader reader;
     private String localIP;
+    private int pkgType;
     private TextView loss;
     private TextView dns;
     private TextView tcp;
@@ -45,6 +48,7 @@ public class NetQualityIndicatorsActivity extends Activity {
     private TextView speed;
     private TextView traffic;
     private TextView ss;
+    private int score;
 
     /**
      * @author zzz
@@ -56,6 +60,9 @@ public class NetQualityIndicatorsActivity extends Activity {
         setContentView(R.layout.activity_net_quality_indicators);
         Intent from = getIntent();
         localIP = from.getStringExtra(LOCALIP);
+        pkgType = from.getIntExtra(PKG_TYPE, 0);
+        Log.v(TAG, "localIP - " + localIP);
+        Log.v(TAG, "pkgType - " + pkgType);
 
         loss = (TextView) this.findViewById(R.id.pl);
         dns = (TextView) this.findViewById(R.id.dns);
@@ -92,6 +99,11 @@ public class NetQualityIndicatorsActivity extends Activity {
 
                     @Override
                     public void onComplete() {
+                        ScoreStatisticsSuper statistics = ScoreStatisticsFactory
+                                .create(pkgType);
+                        score = statistics.totalScore(reader.avrDns,
+                                reader.avrRtt, reader.avrRes, reader.avrTime,
+                                reader.avrSpeed, reader.traffic);
                         Message msg = new Message();
                         msg.what = READ_COMPLETE;
                         handler.sendMessage(msg);
@@ -113,7 +125,6 @@ public class NetQualityIndicatorsActivity extends Activity {
         public void handleMessage(Message msg) {
             switch (msg.what) {
             case READ_COMPLETE:
-                progressDialog.cancel();
                 loss.setText("" + reader.pktLoss);
                 dns.setText(df.format(0.001 * reader.avrDns) + " ms");
                 tcp.setText(df.format(0.001 * reader.avrRtt) + " ms");
@@ -121,10 +132,8 @@ public class NetQualityIndicatorsActivity extends Activity {
                 load.setText(df.format(1e-6 * reader.avrTime) + " s");
                 speed.setText(formatSpeed(8 * reader.avrSpeed));
                 traffic.setText(formatTraffic(reader.traffic));
-                int score = ScoreStatistics.totalScore(reader.avrDns,
-                        reader.avrRtt, reader.avrRes, reader.avrTime,
-                        reader.avrSpeed, reader.traffic);
                 ss.setText("" + score);
+                progressDialog.cancel();
             default:
                 Log.w(TAG, "unknow msg");
             }
