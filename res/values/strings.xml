@@ -21,8 +21,10 @@
 
     <string-array name="pkg_types">
         <item>web</item>
-        <item>download</item>
+        <item>downloading</item>
         <item>video</item>
+        <item>trading</item>
+        <item>game</item>
     </string-array>
 
 </resources>

@@ -11,8 +11,10 @@ public class ScoreStatisticsFactory {
         switch (type) {
         case ScoreStatisticsSuper.WEB:
             return new WebScoreStatistics();
-        case ScoreStatisticsSuper.DOWNLOAD:
+        case ScoreStatisticsSuper.DOWNLOADING:
         case ScoreStatisticsSuper.VIDEO:
+        case ScoreStatisticsSuper.TRADING:
+        case ScoreStatisticsSuper.GAME:
         default:
             return new DefaultScoreStatistics();
         }
