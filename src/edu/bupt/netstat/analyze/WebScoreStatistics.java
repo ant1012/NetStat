@@ -35,10 +35,11 @@ public class WebScoreStatistics extends ScoreStatisticsSuper {
     }
 
     @Override
-    public int totalScore(int dns, int tcp, int resp, int load, long speed,
-            long traffic) {
-        return (int) (0.0389 * dnsScore(dns) + 0.0859 * tcpScore(tcp) + 0.138
-                * respScore(resp) + 0.4039 * loadScore(load) + 0.2857
-                * speedScore(speed) + 0.0476 * trafficScore(traffic));
+    public int totalScore(PacketReader reader) {
+
+        return (int) (0.0389 * dnsScore(reader.avrDns) + 0.0859
+                * tcpScore(reader.avrRtt) + 0.138 * respScore(reader.avrRes)
+                + 0.4039 * loadScore(reader.avrTime) + 0.2857
+                * speedScore(reader.avrSpeed) + 0.0476 * trafficScore(reader.traffic));
     }
 }

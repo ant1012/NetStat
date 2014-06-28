@@ -101,9 +101,7 @@ public class NetQualityIndicatorsActivity extends Activity {
                     public void onComplete() {
                         ScoreStatisticsSuper statistics = ScoreStatisticsFactory
                                 .create(pkgType);
-                        score = statistics.totalScore(reader.avrDns,
-                                reader.avrRtt, reader.avrRes, reader.avrTime,
-                                reader.avrSpeed, reader.traffic);
+                        score = statistics.totalScore(reader);
                         Message msg = new Message();
                         msg.what = READ_COMPLETE;
                         handler.sendMessage(msg);

@@ -20,7 +20,9 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="edu.bupt.netstat.MainActivity"
-            android:label="@string/app_name" >
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/app_name"
+            android:launchMode="singleInstance" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -29,10 +31,12 @@
         </activity>
         <activity
             android:name="edu.bupt.netstat.NetQualityIndicatorsActivity"
+            android:configChanges="orientation|keyboardHidden"
             android:label="@string/title_activity_net_quality_indicators" >
         </activity>
         <activity
             android:name="edu.bupt.netstat.PacketDetailsActivity"
+            android:configChanges="orientation|keyboardHidden"
             android:label="@string/title_activity_packet_details" >
         </activity>
     </application>

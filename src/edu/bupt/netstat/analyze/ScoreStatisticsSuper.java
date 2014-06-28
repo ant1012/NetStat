@@ -13,6 +13,5 @@ public abstract class ScoreStatisticsSuper {
     public static final int TRADING = 3;
     public static final int GAME = 4;
 
-    public abstract int totalScore(int dns, int tcp, int resp, int load,
-            long speed, long traffic);
+    public abstract int totalScore(PacketReader reader);
 }

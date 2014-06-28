@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -12,6 +15,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,6 +40,7 @@ import edu.bupt.netstat.pcap.DumpHelper;
 public class MainActivity extends Activity implements OnClickListener {
     private static final String TAG = "MainActivity";
     private static final int MSG_UPDATE_IPLIST = 1;
+    private static final int NOTIFICATION_ID = 101;
 
     private TextView tvFileLength;
     private Button btDumpStart;
@@ -43,6 +49,7 @@ public class MainActivity extends Activity implements OnClickListener {
     private Spinner spPkgType;
     private Spinner spPkgName;
     private TextView tvIpList;
+    private NotificationManager manager;
     private ArrayAdapter adapterPkgType;
     private SimpleAdapter adapterPkgName;
     private List<HashMap<String, Object>> appList;
@@ -100,6 +107,8 @@ public class MainActivity extends Activity implements OnClickListener {
             public void onNothingSelected(AdapterView<?> arg0) {
             }
         });
+        manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
     }
 
     /**
@@ -144,10 +153,25 @@ public class MainActivity extends Activity implements OnClickListener {
             helper.startCapture();
 
             btAnalyze.setClickable(true);
+
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(
+                    this).setSmallIcon(R.drawable.ic_launcher)
+                    .setContentTitle(getText(R.string.app_name))
+                    .setContentText(getText(R.string.notify_capturing))
+                    .setOngoing(true);
+            Intent resultIntent = new Intent(this, MainActivity.class);
+            TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+            stackBuilder.addParentStack(MainActivity.class);
+            stackBuilder.addNextIntent(resultIntent);
+            PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(
+                    0, PendingIntent.FLAG_UPDATE_CURRENT);
+            builder.setContentIntent(resultPendingIntent);
+            manager.notify(NOTIFICATION_ID, builder.build());
             break;
         case R.id.button_dump_stop:
             handler.removeCallbacks(runnable);
             helper.stopCapture();
+            manager.cancel(NOTIFICATION_ID);
             break;
         case R.id.button_analyze:
             Intent i = new Intent(MainActivity.this,

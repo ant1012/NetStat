@@ -61,6 +61,9 @@ public class DumpHelper {
         this.localIP = getLocalIPAddress();
         this.uid = "";
         this.captureFile = new File(fileOutPath + fileName);
+        if (captureFile.exists()) {
+            captureFile.delete();
+        }
         initTcpdump();
     }
 

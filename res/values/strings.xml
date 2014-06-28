@@ -18,6 +18,7 @@
     <string name="title_activity_packet_details">Packet Details</string>
     <string name="processing_hint">Processing</string>
     <string name="description_icon">Icon</string>
+    <string name="notify_capturing">Capturing</string>
 
     <string-array name="pkg_types">
         <item>web</item>
