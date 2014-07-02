@@ -13,6 +13,7 @@ public class ScoreStatisticsFactory {
             return new WebScoreStatistics();
         case ScoreStatisticsSuper.DOWNLOADING:
         case ScoreStatisticsSuper.VIDEO:
+            return new VideoScoreStatistics();
         case ScoreStatisticsSuper.TRADING:
         case ScoreStatisticsSuper.GAME:
         default:

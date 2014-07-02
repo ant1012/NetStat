@@ -44,6 +44,7 @@ public class PacketReader {
     public int avrRes;
     public int avrTime;
     public long avrSpeed;
+    public float delayJitter;
     public long traffic;
     public HashMap<String, Integer> responseTime = new HashMap<String, Integer>();
     public HashMap<String, Integer> dnsTime = new HashMap<String, Integer>();
@@ -99,6 +100,8 @@ public class PacketReader {
 
         traffic = new File(pcapFileName).length();
         avrSpeed = getAvrSpeed();
+
+        delayJitter = getDelayJitter();
 
         testLog();
         onReadComplete.onComplete();
@@ -442,4 +445,19 @@ public class PacketReader {
     // al.add(Integer.valueOf(s.split("~")[1]));
     // }
     // }
+
+    private float getDelayJitter() {
+        float sum = 0;
+        int count = 0;
+        for (int i = 0; i < packets.size(); i++) {
+            if (rttMap.containsKey(i)) {
+                sum += Math.sqrt(((float) rttMap.get(i) - avrRtt)
+                        * (rttMap.get(i) - avrRtt));
+                count++;
+                Log.v(TAG, "rttMap.get(i) - " + rttMap.get(i));
+            }
+        }
+        Log.v(TAG, "sum / (count - 1) - " + (sum / (count - 1)));
+        return (sum / (count - 1));
+    }
 }
