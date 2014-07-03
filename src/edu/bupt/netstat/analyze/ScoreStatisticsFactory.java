@@ -12,6 +12,7 @@ public class ScoreStatisticsFactory {
         case ScoreStatisticsSuper.WEB:
             return new WebScoreStatistics();
         case ScoreStatisticsSuper.DOWNLOADING:
+        	return new DownloadScoreStatistics();
         case ScoreStatisticsSuper.VIDEO:
             return new VideoScoreStatistics();
         case ScoreStatisticsSuper.TRADING:

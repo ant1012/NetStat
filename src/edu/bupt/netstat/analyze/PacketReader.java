@@ -46,6 +46,7 @@ public class PacketReader {
     public long avrSpeed;
     public float delayJitter;
     public long traffic;
+    public int threadNum;
     public HashMap<String, Integer> responseTime = new HashMap<String, Integer>();
     public HashMap<String, Integer> dnsTime = new HashMap<String, Integer>();
     public HashMap<Integer, Integer> rrMap = new HashMap<Integer, Integer>();
@@ -89,20 +90,21 @@ public class PacketReader {
         listPackets();
         retTable = new boolean[packets.size()];
         rttMap = new HashMap<Integer, Integer>();
-        pktLoss = getRetTimes();
-        avrRtt = getRtt();
-        avrDns = getDns();
-        avrRes = getHttpResponse();
+        pktLoss = getRetTimes();// 丢包率？
+        avrRtt = getRtt();// tcp连接时延，网页连接时延
+        avrDns = getDns();// dns时延
+        avrRes = getHttpResponse();// 网页响应时延
 
-        pktTime = getPktTime();
+        pktTime = getPktTime();//
 
-        avrTime = getAvrTime();
+        avrTime = getAvrTime();// 网页下载时延以及下载文件时延
 
         traffic = new File(pcapFileName).length();
         avrSpeed = getAvrSpeed();
 
         delayJitter = getDelayJitter();
 
+        threadNum = getThreadNum();// 获取进程数
         testLog();
         onReadComplete.onComplete();
     }
@@ -371,12 +373,41 @@ public class PacketReader {
                     String get = s + http.fieldValue(Request.RequestUrl);
                     int r = rttMap.get(res); // TODO error here
                     responseTime.put(get, r);
+                    Log.v("ThreadNum", get);
                     totRes += r;
                     cnt++;
                 }
             }
         }
         return cnt > 0 ? totRes / cnt : 0;
+    }
+
+    /**
+     * @author xiang
+     * 
+     */
+    private int getThreadNum() {
+        int num = 0;
+        int psize = packets.size();
+        JPacket p;
+        String s = null;
+        for (int i = 0; i < psize; i++) {
+            p = packets.get(i);
+            if (p.hasHeader(Http.ID)) {
+                Http http = new Http();
+                p.getHeader(http);
+                s = http.fieldValue(Request.Host);
+                Integer res = rrMap.get(i);
+                if (s != null && res != null) {
+                    String get = s + http.fieldValue(Request.RequestUrl);
+                    if (get.contains("mp3") || get.contains("m4a")
+                            || get.contains("apk"))
+                        num++;
+                }
+                Log.v("ThreadNum", "线程数 " + num);
+            }
+        }
+        return num;
     }
 
     /**

@@ -24,9 +24,11 @@
         android:orientation="vertical" >
 
         <LinearLayout
+            android:id="@+id/layout_retransmission"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+            android:orientation="horizontal"
+            android:visibility="gone" >
 
             <TextView
                 android:layout_width="wrap_content"
@@ -35,7 +37,7 @@
                 android:textSize="18sp" />
 
             <TextView
-                android:id="@+id/pl"
+                android:id="@+id/textview_retransmission"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="right"
@@ -44,9 +46,11 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/layout_dns"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+            android:orientation="horizontal"
+            android:visibility="gone" >
 
             <TextView
                 android:layout_width="wrap_content"
@@ -55,7 +59,7 @@
                 android:textSize="18sp" />
 
             <TextView
-                android:id="@+id/dns"
+                android:id="@+id/textview_dns"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="right"
@@ -64,9 +68,11 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/layout_tcpconnectiontime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+            android:orientation="horizontal"
+            android:visibility="gone" >
 
             <TextView
                 android:layout_width="wrap_content"
@@ -75,7 +81,7 @@
                 android:textSize="18sp" />
 
             <TextView
-                android:id="@+id/tcp"
+                android:id="@+id/textview_tcpconnectiontime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="right"
@@ -84,9 +90,11 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/layout_responsetime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+            android:orientation="horizontal"
+            android:visibility="gone" >
 
             <TextView
                 android:layout_width="wrap_content"
@@ -95,7 +103,7 @@
                 android:textSize="18sp" />
 
             <TextView
-                android:id="@+id/resp"
+                android:id="@+id/textview_responsetime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="right"
@@ -104,9 +112,11 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/layout_loadtime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+            android:orientation="horizontal"
+            android:visibility="gone" >
 
             <TextView
                 android:layout_width="wrap_content"
@@ -115,7 +125,7 @@
                 android:textSize="18sp" />
 
             <TextView
-                android:id="@+id/load"
+                android:id="@+id/textview_loadtime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="right"
@@ -124,9 +134,11 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/layout_speed"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+            android:orientation="horizontal"
+            android:visibility="gone" >
 
             <TextView
                 android:layout_width="wrap_content"
@@ -135,7 +147,7 @@
                 android:textSize="18sp" />
 
             <TextView
-                android:id="@+id/speed"
+                android:id="@+id/textview_speed"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="right"
@@ -144,9 +156,11 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/layout_traffic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+            android:orientation="horizontal"
+            android:visibility="gone" >
 
             <TextView
                 android:layout_width="wrap_content"
@@ -155,7 +169,51 @@
                 android:textSize="18sp" />
 
             <TextView
-                android:id="@+id/traffic"
+                android:id="@+id/textview_traffic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:hint="0"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_thread"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Thread Numbers:"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/textview_thread"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:hint="0"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_jitter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Delay Jitter:"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/textview_jitter"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="right"
