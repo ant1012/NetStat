@@ -43,3 +43,4 @@ public class WebScoreStatistics extends ScoreStatisticsSuper {
                 * speedScore(reader.avrSpeed) + 0.0476 * trafficScore(reader.traffic));
     }
 }
+ 

@@ -47,6 +47,7 @@ public class NetQualityIndicatorsActivity extends Activity {
     private TextView load;
     private TextView speed;
     private TextView traffic;
+    private TextView thread;
     private TextView ss;
     private int score;
 
@@ -71,6 +72,7 @@ public class NetQualityIndicatorsActivity extends Activity {
         load = (TextView) this.findViewById(R.id.load);
         speed = (TextView) this.findViewById(R.id.speed);
         traffic = (TextView) this.findViewById(R.id.traffic);
+        thread = (TextView) this.findViewById(R.id.thread);
         ss = (TextView) this.findViewById(R.id.ss);
         reader = PacketReader.getInstance();
 
@@ -130,6 +132,7 @@ public class NetQualityIndicatorsActivity extends Activity {
                 load.setText(df.format(1e-6 * reader.avrTime) + " s");
                 speed.setText(formatSpeed(8 * reader.avrSpeed));
                 traffic.setText(formatTraffic(reader.traffic));
+                thread.setText(reader.threadNum + "");
                 ss.setText("" + score);
                 progressDialog.cancel();
             default:
