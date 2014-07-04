@@ -10,6 +10,7 @@
     <string name="dump_stop">Stop</string>
     <string name="analyze">Analyze</string>
     <string name="clear_cache">Clear cache</string>
+    <string name="exit">Exit ?</string>
     <string name="select_pkg_name">Input the App name:</string>
     <string name="set_pkg_name">Set</string>
     <string name="select_pkg_type">Select the App type</string>
