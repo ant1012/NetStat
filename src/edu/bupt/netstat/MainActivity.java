@@ -284,7 +284,9 @@ public class MainActivity extends Activity implements OnClickListener {
 							public void onClick(DialogInterface dialog,
 									int which) {
 								handler.removeCallbacks(runnable);
-								helper.stopCapture();
+								if (helper != null) {
+									helper.stopCapture();
+								}
 								manager.cancel(NOTIFICATION_ID);
 								MainActivity.this.finish();
 							}
