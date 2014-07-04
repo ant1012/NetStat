@@ -1,20 +1,27 @@
 package edu.bupt.netstat;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;  
 import java.text.DecimalFormat;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.text.Layout;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import edu.bupt.netstat.analyze.OnReadComplete;
 import edu.bupt.netstat.analyze.PacketReader;
 import edu.bupt.netstat.analyze.ScoreStatisticsFactory;
@@ -52,7 +59,7 @@ public class NetQualityIndicatorsActivity extends Activity {
 	private TextView jitter;
 	private TextView ss;
 	private int score;
-
+	//private File file;
 	/**
 	 * @author zzz
 	 * 
@@ -76,7 +83,7 @@ public class NetQualityIndicatorsActivity extends Activity {
 		View layoutTraffic = (View) findViewById(R.id.layout_traffic);
 		View layoutThread = (View) findViewById(R.id.layout_thread);
 		View layoutJitter = (View) findViewById(R.id.layout_jitter);
-
+		
 		switch (pkgType) {
 		case ScoreStatisticsSuper.WEB:
 			layoutDns.setVisibility(View.VISIBLE);
@@ -90,7 +97,7 @@ public class NetQualityIndicatorsActivity extends Activity {
 		case ScoreStatisticsSuper.DOWNLOADING:
 			layoutDns.setVisibility(View.VISIBLE);
 			layoutTcpConnectionTime.setVisibility(View.VISIBLE);
-			layoutResponse.setVisibility(View.VISIBLE);
+			layoutLoadTime.setVisibility(View.VISIBLE);
 			layoutThread.setVisibility(View.VISIBLE);
 			layoutSpeed.setVisibility(View.VISIBLE);
 			layoutRetransmission.setVisibility(View.VISIBLE);
@@ -130,6 +137,17 @@ public class NetQualityIndicatorsActivity extends Activity {
 				startActivity(intent);
 			}
 		});
+		
+		Button saveBut = (Button) this.findViewById(R.id.save);
+		//File file = new File(Environment.getExternalStorageDirectory(), "reslut.txt");
+		saveBut.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				writeToLocal();
+			}	
+		});
 
 		progressDialog = ProgressDialog.show(this, null,
 				getString(R.string.processing_hint), true, false);
@@ -155,6 +173,86 @@ public class NetQualityIndicatorsActivity extends Activity {
 			}
 		}).start();
 
+	}
+	/**
+	 * @author yyl
+	 */
+	public void writeToLocal(){
+		File file = new File(Environment.getExternalStorageDirectory(), "reslut.txt");
+		BufferedWriter writeToLocal = null;
+		String appType=null;
+        try {
+        	writeToLocal = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file,true)));
+        } catch (FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+        }
+        
+        StringBuilder sbTitle = new StringBuilder();
+    	sbTitle.append("Retransnission"+"\t").append("DNS Time"+"\t")
+    	.append("TCP Conn Time" + "\t").append("Response Time"+"\t").append("Load Time"+"\t")
+    	.append("Speed"+"\t").append("Total Traffic" +"\t").append("Jitter"+"\t").append("Thread Numbers"+"\t")
+    	.append("Score"+"\t").append("App Type"+"\t").append("netWork_Type");
+    	
+    	StringBuilder sbDataCommon = new StringBuilder();
+    	sbDataCommon.append("\n"+loss.getText()+"\t").append(dns.getText()+"\t")
+    	.append(tcp.getText() + "\t");
+    	
+    	StringBuilder sbData = new StringBuilder();
+    	
+    	switch (pkgType){
+    	case 0:
+    		appType="web";
+    		sbData = sbDataCommon.append(resp.getText()+"\t").append(load.getText()+"\t").append(speed.getText()+"\t")
+    		.append(traffic.getText() +"\t").append("--"+"\t").append("--"+"\t")
+        	.append(ss.getText()+"\t").append(appType+"\t").append("null");
+    		break;
+    	case 1:
+    		appType="download";
+    		sbData = sbDataCommon.append("--"+"\t").append(load.getText()+"\t").append(speed.getText()+"\t").append("--"+"\t")
+    		.append("--"+"\t").append(thread.getText()+"\t")
+        	.append(ss.getText()+"\t").append(appType+"\t").append("null");
+    		break;
+    	case 2:
+    		appType="video";
+    		sbData = sbDataCommon.append(resp.getText()+"\t").append("--"+"\t").append(speed.getText()+"\t").append("--"+"\t")
+    		.append(jitter.getText()+"\t").append("--"+"\t")
+        	.append(ss.getText()+"\t").append(appType+"\t").append("null");
+    		break;
+    	case 3:
+    		appType="trading";
+    		break;
+    	case 4:
+    		appType="game";
+    		break;
+    	default:
+    	}
+        try {
+        	if(file.length()>10){
+        		writeToLocal.write(sbData.toString());
+        	}else{
+        		writeToLocal.write(sbTitle.toString());
+        		writeToLocal.write(sbData.toString());
+        	}
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }    
+        try {
+        	writeToLocal.flush();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        try {
+        	writeToLocal.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }    
+        Toast toast = Toast.makeText(NetQualityIndicatorsActivity.this, 
+        		"写文件到SD卡成功   位置：根目录 /result.txt", Toast.LENGTH_SHORT); 
+        toast.show();           
 	}
 
 	/**

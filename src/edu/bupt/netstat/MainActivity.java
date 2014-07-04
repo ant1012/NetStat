@@ -84,10 +84,35 @@ public class MainActivity extends Activity implements OnClickListener {
         adapterPkgType
                 .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spPkgType.setAdapter(adapterPkgType);
+        
+        
+        spPkgType.setOnItemSelectedListener(new OnItemSelectedListener() {
 
-        appList = getInstalledApps(false);
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1,
+                    int arg2, long arg3) {
+                String selectedItem = (String) spPkgType.getSelectedItem();
+                //Log.v("selectedItem", selectedItem);
+                appList = getInstalledApps(false,selectedItem);
+                selectApp(appList);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+            }
+        });        
+       
+        
+        manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+    }
+    /**
+     * @author
+     * 
+     */
+    public void selectApp(List<HashMap<String, Object>> list){
+    	
         spPkgName = (Spinner) findViewById(R.id.spinner_pkg_name);
-        adapterPkgName = new SimpleAdapter(this, appList,
+        adapterPkgName = new SimpleAdapter(this, list,
                 android.R.layout.simple_list_item_1,
                 new String[] { "app_title" }, new int[] { android.R.id.text1 });
         spPkgName.setAdapter(adapterPkgName);
@@ -107,8 +132,6 @@ public class MainActivity extends Activity implements OnClickListener {
             public void onNothingSelected(AdapterView<?> arg0) {
             }
         });
-        manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
     }
 
     /**
@@ -236,7 +259,7 @@ public class MainActivity extends Activity implements OnClickListener {
      * 
      */
     private List<HashMap<String, Object>> getInstalledApps(
-            boolean getSysPackages) {
+            boolean getSysPackages,String appType) {
         List<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
 
         List<PackageInfo> pkgs = getPackageManager().getInstalledPackages(0);
@@ -250,15 +273,48 @@ public class MainActivity extends Activity implements OnClickListener {
                     .toString();
             String version = pkg.versionName;
             String packageName = pkg.packageName;
-            // Drawable icon =
-            // pkg.applicationInfo.loadIcon(getPackageManager());
+            
 
             HashMap<String, Object> map = new HashMap<String, Object>();
             map.put("app_title", label + " " + version);
             map.put("app_package", packageName);
             // map.put("app_icon", icon);
             Log.v(TAG, "find package " + packageName);
-            list.add(map);
+            switch(appType){
+            case "web":
+            	if(map.get("app_title").toString().contains("浏览器") || 
+            			map.get("app_title").toString().contains("Chrome"))
+            		list.add(map);
+            break;
+            case "downloading":
+            	if(map.get("app_title").toString().contains("手机助手") || 
+            			map.get("app_title").toString().contains("豌豆荚")|| 
+            			map.get("app_title").toString().contains("音乐")|| 
+            			map.get("app_title").toString().contains("天天动听"))
+            		list.add(map);
+            break;
+            case "video":
+            	if(map.get("app_package").toString().contains("youku") || 
+            			map.get("app_package").toString().contains("video")|| 
+            			map.get("app_package").toString().contains("kankan")|| 
+            			map.get("app_package").toString().contains("live")|| 
+            			map.get("app_package").toString().contains("storm")|| 
+            			map.get("app_title").toString().contains("视频")|| 
+            			map.get("app_title").toString().contains("影视")|| 
+            			map.get("app_title").toString().contains("电视"))
+            		list.add(map);
+            break;
+            case "trading":
+            	if(map.get("app_package").toString().contains("taobao") || 
+            			map.get("app_title").toString().contains("支付"))
+            		list.add(map);
+            break;
+            case "game":
+            	if(map.get("app_package").toString().contains("game")||
+            			map.get("app_title").toString().contains("消除"))
+            		list.add(map);
+            break;
+            }
         }
         return list;
     }
