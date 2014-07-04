@@ -220,6 +220,8 @@
                 android:hint="0"
                 android:textSize="18sp" />
         </LinearLayout>
+         
+      
     </LinearLayout>
 
     <LinearLayout
@@ -244,13 +246,20 @@
             android:textColor="#FF0000"
             android:textSize="20sp" />
     </LinearLayout>
-
+   
     <Button
         android:id="@+id/detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="Packets Details"
+        android:textSize="20dp" />
+    <Button
+        android:id="@+id/save"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Save Result"
         android:textSize="20dp" />
 
 </LinearLayout>

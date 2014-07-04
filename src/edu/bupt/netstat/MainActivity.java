@@ -32,6 +32,7 @@ import android.widget.Button;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import edu.bupt.netstat.analyze.ScoreStatisticsSuper;
 import edu.bupt.netstat.pcap.DumpHelper;
 import edu.bupt.netstat.utils.Utils;
 
@@ -92,9 +93,34 @@ public class MainActivity extends Activity implements OnClickListener {
 				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spPkgType.setAdapter(adapterPkgType);
 
-		appList = getInstalledApps(false);
+		spPkgType.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				// int selectedItem = (String) spPkgType.getSelectedItem();
+				// Log.v("selectedItem", selectedItem);
+				appList = getInstalledApps(false, arg2);
+				selectApp(appList);
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+			}
+		});
+
+		manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+	}
+
+	/**
+	 * @author yyl
+	 * 
+	 */
+	public void selectApp(List<HashMap<String, Object>> list) {
+
 		spPkgName = (Spinner) findViewById(R.id.spinner_pkg_name);
-		adapterPkgName = new SimpleAdapter(this, appList,
+		adapterPkgName = new SimpleAdapter(this, list,
 				android.R.layout.simple_list_item_1,
 				new String[] { "app_title" }, new int[] { android.R.id.text1 });
 		spPkgName.setAdapter(adapterPkgName);
@@ -114,8 +140,6 @@ public class MainActivity extends Activity implements OnClickListener {
 			public void onNothingSelected(AdapterView<?> arg0) {
 			}
 		});
-		manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
 	}
 
 	/**
@@ -246,34 +270,6 @@ public class MainActivity extends Activity implements OnClickListener {
 	 * @author zzz
 	 * 
 	 */
-	private List<HashMap<String, Object>> getInstalledApps(
-			boolean getSysPackages) {
-		List<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
-
-		List<PackageInfo> pkgs = getPackageManager().getInstalledPackages(0);
-		for (int i = 0; i < pkgs.size(); i++) {
-			PackageInfo pkg = pkgs.get(i);
-			if (!getSysPackages
-					&& (pkg.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) > 0) {
-				continue;
-			}
-			String label = pkg.applicationInfo.loadLabel(getPackageManager())
-					.toString();
-			String version = pkg.versionName;
-			String packageName = pkg.packageName;
-			// Drawable icon =
-			// pkg.applicationInfo.loadIcon(getPackageManager());
-
-			HashMap<String, Object> map = new HashMap<String, Object>();
-			map.put("app_title", label + " " + version);
-			map.put("app_package", packageName);
-			// map.put("app_icon", icon);
-			Log.v(TAG, "find package " + packageName);
-			list.add(map);
-		}
-		return list;
-	}
-
 	@Override
 	public void onBackPressed() {
 		new AlertDialog.Builder(this)
@@ -298,5 +294,70 @@ public class MainActivity extends Activity implements OnClickListener {
 									int which) {
 							}
 						}).show();
+	}
+
+	/**
+	 * @author zzz
+	 * @author yyl
+	 * 
+	 */
+	private List<HashMap<String, Object>> getInstalledApps(
+			boolean getSysPackages, int appType) {
+		List<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
+
+		List<PackageInfo> pkgs = getPackageManager().getInstalledPackages(0);
+		for (int i = 0; i < pkgs.size(); i++) {
+			PackageInfo pkg = pkgs.get(i);
+			if (!getSysPackages
+					&& (pkg.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) > 0) {
+				continue;
+			}
+			String label = pkg.applicationInfo.loadLabel(getPackageManager())
+					.toString();
+			String version = pkg.versionName;
+			String packageName = pkg.packageName;
+
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			map.put("app_title", label + " " + version);
+			map.put("app_package", packageName);
+			// map.put("app_icon", icon);
+			Log.v(TAG, "find package " + packageName);
+			switch (appType) {
+			case ScoreStatisticsSuper.WEB:
+				if (map.get("app_title").toString().contains("浏览器")
+						|| map.get("app_title").toString().contains("Chrome"))
+					list.add(map);
+				break;
+			case ScoreStatisticsSuper.DOWNLOADING:
+				if (map.get("app_title").toString().contains("手机助手")
+						|| map.get("app_title").toString().contains("豌豆荚")
+						|| map.get("app_title").toString().contains("音乐")
+						|| map.get("app_title").toString().contains("天天动听"))
+					list.add(map);
+				break;
+			case ScoreStatisticsSuper.VIDEO:
+				if (map.get("app_package").toString().contains("youku")
+						|| map.get("app_package").toString().contains("video")
+						|| map.get("app_package").toString().contains("kankan")
+						|| map.get("app_package").toString().contains("live")
+						|| map.get("app_package").toString().contains("storm")
+						|| map.get("app_title").toString().contains("视频")
+						|| map.get("app_title").toString().contains("影视")
+						|| map.get("app_title").toString().contains("电视"))
+					list.add(map);
+				break;
+			case ScoreStatisticsSuper.TRADING:
+				if (map.get("app_package").toString().contains("taobao")
+						|| map.get("app_title").toString().contains("支付"))
+					list.add(map);
+				break;
+			case ScoreStatisticsSuper.GAME:
+				if (map.get("app_package").toString().contains("game")
+						|| map.get("app_title").toString().contains("消除"))
+					list.add(map);
+				break;
+			}
+		}
+		return list;
 	}
 }
