@@ -39,7 +39,9 @@ public class NetQualityIndicatorsActivity extends Activity {
 
 	private static final int READ_COMPLETE = 1;
 	public static final String LOCALIP = "localip";
-	public static final String PKG_TYPE = "pkg_type";
+    public static final String PKG_TYPE = "pkg_type";
+    public static final String SET_WEIGHT = "set_weight";
+	public static final int REQUEST_CODE_SETWEIGHT = 101;
 
 	DecimalFormat df = new DecimalFormat("#.###");
 
@@ -61,7 +63,9 @@ public class NetQualityIndicatorsActivity extends Activity {
 	private TextView res_efficiency;
 	private TextView ss;
 	private int score;
+	private ScoreStatisticsSuper statistics;
 	//private File file;
+
 	/**
 	 * @author zzz
 	 * 
@@ -96,7 +100,6 @@ public class NetQualityIndicatorsActivity extends Activity {
 			layoutLoadTime.setVisibility(View.VISIBLE);
 			layoutSpeed.setVisibility(View.VISIBLE);
 			layoutTraffic.setVisibility(View.VISIBLE);
-			layoutRetransmission.setVisibility(View.VISIBLE);
 			break;
 		case ScoreStatisticsSuper.DOWNLOADING:
 			layoutDns.setVisibility(View.VISIBLE);
@@ -140,6 +143,7 @@ public class NetQualityIndicatorsActivity extends Activity {
 		
 		ss = (TextView) this.findViewById(R.id.ss);
 		reader = PacketReader.getInstance();
+        statistics = ScoreStatisticsFactory.create(pkgType);
 
 		Button detButt = (Button) this.findViewById(R.id.detail);
 		detButt.setOnClickListener(new OnClickListener() {
@@ -165,6 +169,15 @@ public class NetQualityIndicatorsActivity extends Activity {
 			}	
 		});
 
+        Button setWeightBut = (Button) this.findViewById(R.id.set_weight);
+        setWeightBut.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                setWeight();
+            }
+        });
+
 		progressDialog = ProgressDialog.show(this, null,
 				getString(R.string.processing_hint), true, false);
 
@@ -177,8 +190,6 @@ public class NetQualityIndicatorsActivity extends Activity {
 
 					@Override
 					public void onComplete() {
-						ScoreStatisticsSuper statistics = ScoreStatisticsFactory
-								.create(pkgType);
 						score = statistics.totalScore(reader);
 						Message msg = new Message();
 						msg.what = READ_COMPLETE;
@@ -190,7 +201,19 @@ public class NetQualityIndicatorsActivity extends Activity {
 		}).start();
 
 	}
-	/**
+
+    /**
+     * @author zzz
+     */
+	protected void setWeight() {
+        Log.v(TAG, "setWeight");
+        Intent intent = new Intent(this, SetWeightActivity.class);
+        intent.putExtra(PKG_TYPE, pkgType);
+        intent.putExtra(SET_WEIGHT, statistics.scoreWeight);
+        startActivityForResult(intent, REQUEST_CODE_SETWEIGHT);
+    }
+
+    /**
 	 * @author yyl
 	 */
 	public void writeToLocal(){
@@ -307,6 +330,7 @@ public class NetQualityIndicatorsActivity extends Activity {
 				
 				ss.setText("" + score);
 				progressDialog.cancel();
+				break;
 			default:
 				Log.w(TAG, "unknow msg");
 			}
@@ -346,4 +370,22 @@ public class NetQualityIndicatorsActivity extends Activity {
 		return false;
 	}
 
+    /**
+     * @author zzz
+     * 
+     */
+	@Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+	    switch(requestCode) {
+	    case REQUEST_CODE_SETWEIGHT:
+	        if(resultCode == Activity.RESULT_OK) {
+	            statistics.scoreWeight = intent.getParcelableExtra(SET_WEIGHT);
+	            Log.d(TAG, "weightDnsScore - " + statistics.scoreWeight.weightDnsScore);
+                score = statistics.totalScore(reader);
+                Message msg = new Message();
+                msg.what = READ_COMPLETE;
+                handler.sendMessage(msg);
+	        }
+	    }
+	}
 }

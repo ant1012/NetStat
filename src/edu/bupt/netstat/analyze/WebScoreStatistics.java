@@ -1,5 +1,7 @@
 package edu.bupt.netstat.analyze;
 
+import android.util.Log;
+
 /**
  * WebScoreStatistics
  * 
@@ -7,6 +9,12 @@ package edu.bupt.netstat.analyze;
  * 
  */
 public class WebScoreStatistics extends ScoreStatisticsSuper {
+    private final static String TAG = "WebScoreStatistics";
+
+    public WebScoreStatistics() {
+        this.scoreWeight = new ScoreWeight(0.0389, 0.0859, 0.138, 0.4039,
+                0.2857, 0.0476, 0, 0, 0, 0);
+    }
 
     protected int dnsScore(int dns) { // unit: us
         return (int) (dns > 0 ? 20910.0 / (209.1 + 0.001 * dns) : 0);
@@ -36,11 +44,19 @@ public class WebScoreStatistics extends ScoreStatisticsSuper {
 
     @Override
     public int totalScore(PacketReader reader) {
+        Log.v(TAG, "" + this.scoreWeight.weightDnsScore + " "
+                + this.scoreWeight.weightTcpScore + " "
+                + this.scoreWeight.weightRespScore + " "
+                + this.scoreWeight.weightLoadScore + " "
+                + this.scoreWeight.weightSpeedScore + " "
+                + this.scoreWeight.weightTrafficScore);
 
-        return (int) (0.0389 * dnsScore(reader.avrDns) + 0.0859
-                * tcpScore(reader.avrRtt) + 0.138 * respScore(reader.avrRes)
-                + 0.4039 * loadScore(reader.avrTime) + 0.2857
-                * speedScore(reader.avrSpeed) + 0.0476 * trafficScore(reader.traffic));
+        return (int) (this.scoreWeight.weightDnsScore * dnsScore(reader.avrDns)
+                + this.scoreWeight.weightTcpScore * tcpScore(reader.avrRtt)
+                + this.scoreWeight.weightRespScore * respScore(reader.avrRes)
+                + this.scoreWeight.weightLoadScore * loadScore(reader.avrTime)
+                + this.scoreWeight.weightSpeedScore
+                * speedScore(reader.avrSpeed) + this.scoreWeight.weightTrafficScore
+                * trafficScore(reader.traffic));
     }
 }
- 

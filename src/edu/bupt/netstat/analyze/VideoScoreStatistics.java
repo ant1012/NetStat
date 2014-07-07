@@ -1,5 +1,7 @@
 package edu.bupt.netstat.analyze;
 
+import android.util.Log;
+
 /**
  * VideoScoreStatistics
  * 
@@ -7,6 +9,12 @@ package edu.bupt.netstat.analyze;
  * 
  */
 public class VideoScoreStatistics extends ScoreStatisticsSuper {
+    private final static String TAG = "VideoScoreStatistics";
+
+    public VideoScoreStatistics() {
+        this.scoreWeight = new ScoreWeight(0.0355, 0.1015, 0.1621, 0, 0.0556,
+                0, 0.3676, 0.2778, 0, 0);
+    }
 
     protected int dnsScore(int dns) { // unit: us
         return (int) (dns > 0 ? 20910.0 / (208.3 + 0.001 * dns) : 0);
@@ -36,10 +44,21 @@ public class VideoScoreStatistics extends ScoreStatisticsSuper {
 
     @Override
     public int totalScore(PacketReader reader) {
-        return (int) (0.0355 * dnsScore(reader.avrDns) + 0.1015
-                * tcpScore(reader.avrRtt) + 0.1621 * respScore(reader.avrRes)
-                + 0.3676 * delayJitterScore(reader.delayJitter) + 0.2778
-                * pktLossScore(reader.pktLoss) + 0.0556 * speedScore(reader.avrSpeed));
+        Log.v(TAG, "" + this.scoreWeight.weightDnsScore + " "
+                + this.scoreWeight.weightTcpScore + " "
+                + this.scoreWeight.weightRespScore + " "
+                + this.scoreWeight.weightDelayjitterScore + " "
+                + this.scoreWeight.weightPacketlossScore + " "
+                + this.scoreWeight.weightSpeedScore);
+
+        return (int) (this.scoreWeight.weightDnsScore * dnsScore(reader.avrDns)
+                + this.scoreWeight.weightTcpScore * tcpScore(reader.avrRtt)
+                + this.scoreWeight.weightRespScore * respScore(reader.avrRes)
+                + this.scoreWeight.weightDelayjitterScore
+                * delayJitterScore(reader.delayJitter)
+                + this.scoreWeight.weightPacketlossScore
+                * pktLossScore(reader.pktLoss) + this.scoreWeight.weightSpeedScore
+                * speedScore(reader.avrSpeed));
     }
 
 }

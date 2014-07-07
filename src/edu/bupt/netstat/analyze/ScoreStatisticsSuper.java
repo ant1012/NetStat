@@ -12,6 +12,11 @@ public abstract class ScoreStatisticsSuper {
     public static final int VIDEO = 2;
     public static final int TRADING = 3;
     public static final int GAME = 4;
+    public ScoreWeight scoreWeight;
 
     public abstract int totalScore(PacketReader reader);
+
+    public void setWeight(ScoreWeight w) {
+        this.scoreWeight = w;
+    }
 }

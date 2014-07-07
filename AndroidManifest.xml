@@ -39,6 +39,11 @@
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/title_activity_packet_details" >
         </activity>
+        <activity
+            android:name="edu.bupt.netstat.SetWeightActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/title_activity_set_weight" >
+        </activity>
     </application>
 
 </manifest>
