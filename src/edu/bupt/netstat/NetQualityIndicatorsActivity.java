@@ -57,6 +57,8 @@ public class NetQualityIndicatorsActivity extends Activity {
 	private TextView traffic;
 	private TextView thread;
 	private TextView jitter;
+	private TextView advertise;
+	private TextView res_efficiency;
 	private TextView ss;
 	private int score;
 	//private File file;
@@ -83,6 +85,8 @@ public class NetQualityIndicatorsActivity extends Activity {
 		View layoutTraffic = (View) findViewById(R.id.layout_traffic);
 		View layoutThread = (View) findViewById(R.id.layout_thread);
 		View layoutJitter = (View) findViewById(R.id.layout_jitter);
+		View layoutAdvertise = (View) findViewById(R.id.layout_advertise);
+		View layoutResEfficiency = (View) findViewById(R.id.layout_reseffictive);
 		
 		switch (pkgType) {
 		case ScoreStatisticsSuper.WEB:
@@ -110,6 +114,15 @@ public class NetQualityIndicatorsActivity extends Activity {
 			layoutSpeed.setVisibility(View.VISIBLE);
 			layoutRetransmission.setVisibility(View.VISIBLE);
 			break;
+		case ScoreStatisticsSuper.GAME:
+			layoutDns.setVisibility(View.VISIBLE);
+			layoutTcpConnectionTime.setVisibility(View.VISIBLE);
+			layoutResponse.setVisibility(View.VISIBLE);
+			layoutSpeed.setVisibility(View.VISIBLE);
+			layoutTraffic.setVisibility(View.VISIBLE);
+			layoutRetransmission.setVisibility(View.VISIBLE);
+			layoutAdvertise.setVisibility(View.VISIBLE);
+			layoutResEfficiency.setVisibility(View.VISIBLE);
 		default:
 		}
 
@@ -122,6 +135,9 @@ public class NetQualityIndicatorsActivity extends Activity {
 		traffic = (TextView) this.findViewById(R.id.textview_traffic);
 		thread = (TextView) this.findViewById(R.id.textview_thread);
 		jitter = (TextView) this.findViewById(R.id.textview_jitter);
+		advertise = (TextView) this.findViewById(R.id.textview_advertise);
+		res_efficiency = (TextView) this.findViewById(R.id.textview_resefficiency);
+		
 		ss = (TextView) this.findViewById(R.id.ss);
 		reader = PacketReader.getInstance();
 
@@ -169,7 +185,7 @@ public class NetQualityIndicatorsActivity extends Activity {
 						handler.sendMessage(msg);
 					}
 
-				});
+				},pkgType);
 			}
 		}).start();
 
@@ -189,9 +205,17 @@ public class NetQualityIndicatorsActivity extends Activity {
         }
         
         StringBuilder sbTitle = new StringBuilder();
-    	sbTitle.append("Retransnission"+"\t").append("DNS Time"+"\t")
-    	.append("TCP Conn Time" + "\t").append("Response Time"+"\t").append("Load Time"+"\t")
-    	.append("Speed"+"\t").append("Total Traffic" +"\t").append("Jitter"+"\t").append("Thread Numbers"+"\t")
+    	sbTitle.append("Retransnission"+"\t")
+    	.append("DNS Time"+"\t")
+    	.append("TCP Conn Time" + "\t")
+    	.append("Response Time"+"\t")
+    	.append("Load Time"+"\t")
+    	.append("Speed"+"\t")
+    	.append("Total Traffic" +"\t")
+    	.append("Jitter"+"\t")
+    	.append("Thread Numbers"+"\t")
+    	.append("Advertisement"+"\t")
+    	.append("Resource Efficiency"+"\t")
     	.append("Score"+"\t").append("App Type"+"\t").append("netWork_Type");
     	
     	StringBuilder sbDataCommon = new StringBuilder();
@@ -204,19 +228,19 @@ public class NetQualityIndicatorsActivity extends Activity {
     	case 0:
     		appType="web";
     		sbData = sbDataCommon.append(resp.getText()+"\t").append(load.getText()+"\t").append(speed.getText()+"\t")
-    		.append(traffic.getText() +"\t").append("--"+"\t").append("--"+"\t")
+    		.append(traffic.getText() +"\t").append("--"+"\t").append("--"+"\t").append("--"+"\t").append("--"+"\t")
         	.append(ss.getText()+"\t").append(appType+"\t").append("null");
     		break;
     	case 1:
     		appType="download";
     		sbData = sbDataCommon.append("--"+"\t").append(load.getText()+"\t").append(speed.getText()+"\t").append("--"+"\t")
-    		.append("--"+"\t").append(thread.getText()+"\t")
+    		.append("--"+"\t").append(thread.getText()+"\t").append("--"+"\t").append("--"+"\t")
         	.append(ss.getText()+"\t").append(appType+"\t").append("null");
     		break;
     	case 2:
     		appType="video";
     		sbData = sbDataCommon.append(resp.getText()+"\t").append("--"+"\t").append(speed.getText()+"\t").append("--"+"\t")
-    		.append(jitter.getText()+"\t").append("--"+"\t")
+    		.append(jitter.getText()+"\t").append("--"+"\t").append("--"+"\t").append("--"+"\t")
         	.append(ss.getText()+"\t").append(appType+"\t").append("null");
     		break;
     	case 3:
@@ -224,6 +248,9 @@ public class NetQualityIndicatorsActivity extends Activity {
     		break;
     	case 4:
     		appType="game";
+    		sbData = sbDataCommon.append(resp.getText()+"\t").append("--"+"\t").append(speed.getText()+"\t").append(traffic.getText()+"\t")
+    	    		.append("--"+"\t").append("--"+"\t").append(advertise.getText()+"\t").append(res_efficiency.getText()+"\t")
+    	        	.append(ss.getText()+"\t").append(appType+"\t").append("null");
     		break;
     	default:
     	}
@@ -274,6 +301,10 @@ public class NetQualityIndicatorsActivity extends Activity {
 				traffic.setText(formatTraffic(reader.traffic));
 				thread.setText(String.valueOf(reader.threadNum));
 				jitter.setText(String.valueOf(reader.delayJitter));
+				
+				advertise.setText(reader.advertise_traffic+" Bytes");
+				res_efficiency.setText(reader.res_efficiency+"%");
+				
 				ss.setText("" + score);
 				progressDialog.cancel();
 			default:

@@ -17,6 +17,7 @@ public class ScoreStatisticsFactory {
             return new VideoScoreStatistics();
         case ScoreStatisticsSuper.TRADING:
         case ScoreStatisticsSuper.GAME:
+        	return new GameScoreStatistics();
         default:
             return new DefaultScoreStatistics();
         }

@@ -4,11 +4,14 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.jnetpcap.Pcap;
 import org.jnetpcap.packet.JPacket;
 import org.jnetpcap.packet.JPacketHandler;
+import org.jnetpcap.packet.Payload;
 import org.jnetpcap.packet.format.FormatUtils;
+import org.jnetpcap.protocol.lan.SLL;
 import org.jnetpcap.protocol.network.Ip4;
 import org.jnetpcap.protocol.network.Ip6;
 import org.jnetpcap.protocol.tcpip.Http;
@@ -16,7 +19,10 @@ import org.jnetpcap.protocol.tcpip.Tcp;
 import org.jnetpcap.protocol.tcpip.Udp;
 import org.jnetpcap.protocol.tcpip.Http.Request;
 
+import android.R.integer;
+import android.net.http.SslCertificate;
 import android.util.Log;
+import android.view.View;
 import edu.bupt.netstat.pcap.DumpHelper;
 
 /**
@@ -47,6 +53,10 @@ public class PacketReader {
     public float delayJitter;
     public long traffic;
     public int threadNum;
+    
+    public int advertise_traffic;
+    public float res_efficiency;
+    
     public HashMap<String, Integer> responseTime = new HashMap<String, Integer>();
     public HashMap<String, Integer> dnsTime = new HashMap<String, Integer>();
     public HashMap<Integer, Integer> rrMap = new HashMap<Integer, Integer>();
@@ -82,7 +92,7 @@ public class PacketReader {
      * 
      */
     public void read(String localIP, String pcapFileName,
-            OnReadComplete onReadComplete) {
+            OnReadComplete onReadComplete,int pkgType) {
         this.localIP = localIP;
         this.pcapFileName = pcapFileName;
 
@@ -90,21 +100,62 @@ public class PacketReader {
         listPackets();
         retTable = new boolean[packets.size()];
         rttMap = new HashMap<Integer, Integer>();
-        pktLoss = getRetTimes();// 丢包率？
-        avrRtt = getRtt();// tcp连接时延，网页连接时延
-        avrDns = getDns();// dns时延
-        avrRes = getHttpResponse();// 网页响应时延
-
-        pktTime = getPktTime();//
-
-        avrTime = getAvrTime();// 网页下载时延以及下载文件时延
-
-        traffic = new File(pcapFileName).length();
-        avrSpeed = getAvrSpeed();
-
-        delayJitter = getDelayJitter();
-
-        threadNum = getThreadNum();// 获取进程数
+        switch (pkgType) {
+			case ScoreStatisticsSuper.WEB:
+				avrDns = getDns();// dns时延
+				avrRtt = getRtt();// tcp连接时延，网页连接时延
+				avrRes = getHttpResponse();// 网页响应时延
+				avrTime = getAvrTime();// 网页下载时延以及下载文件时延
+				avrSpeed = getAvrSpeed();
+				traffic = new File(pcapFileName).length();
+				pktLoss = getRetTimes();// 丢包率？
+				break;
+			case ScoreStatisticsSuper.DOWNLOADING:
+				avrDns = getDns();// dns时延
+				avrRtt = getRtt();// tcp连接时延，网页连接时延
+				avrTime = getAvrTime();// 网页下载时延以及下载文件时延
+				threadNum = getThreadNum();// 获取进程数
+				avrSpeed = getAvrSpeed();
+				pktLoss = getRetTimes();// 丢包率？
+				break;
+			case ScoreStatisticsSuper.VIDEO:
+				avrDns = getDns();// dns时延
+				avrRtt = getRtt();// tcp连接时延，网页连接时延
+				avrRes = getHttpResponse();// 网页响应时延
+				delayJitter = getDelayJitter();
+				avrSpeed = getAvrSpeed();
+				pktLoss = getRetTimes();// 丢包率？
+				break;
+			case ScoreStatisticsSuper.GAME:
+				avrDns = getDns();// dns时延
+				avrRtt = getRtt();// tcp连接时延，网页连接时延
+				avrRes = getHttpResponse();// 网页响应时延
+				avrSpeed = getAvrSpeed();
+				traffic = new File(pcapFileName).length();
+				pktLoss = getRetTimes();// 丢包率？
+				advertise_traffic = getAdvertisement();//获取广告流量
+			    res_efficiency = getResrcEfficiency();
+			default:
+		}
+//        pktLoss = getRetTimes();// 丢包率？
+//        avrRtt = getRtt();// tcp连接时延，网页连接时延
+//        avrDns = getDns();// dns时延
+//        avrRes = getHttpResponse();// 网页响应时延
+//
+//        pktTime = getPktTime();//
+//
+//        avrTime = getAvrTime();// 网页下载时延以及下载文件时延
+//
+//        traffic = new File(pcapFileName).length();
+//        avrSpeed = getAvrSpeed();
+//
+//        delayJitter = getDelayJitter();
+//
+//        threadNum = getThreadNum();// 获取进程数
+//        
+//        advertise_traffic = getAdvertisement();//获取广告流量
+//        res_effictive = getResrcEfficiency();
+        
         testLog();
         onReadComplete.onComplete();
     }
@@ -383,11 +434,11 @@ public class PacketReader {
     }
 
     /**
-     * @author xiang
+     * @author Yin
      * 
      */
     private int getThreadNum() {
-        int num = 0;
+        TreeSet<String> ts = new TreeSet<String>();
         int psize = packets.size();
         JPacket p;
         String s = null;
@@ -401,13 +452,13 @@ public class PacketReader {
                 if (s != null && res != null) {
                     String get = s + http.fieldValue(Request.RequestUrl);
                     if (get.contains("mp3") || get.contains("m4a")
-                            || get.contains("apk"))
-                        num++;
+                            || get.contains("apk")){
+                        ts.add(get);
+                    }
                 }
-                Log.v("ThreadNum", "线程数 " + num);
             }
         }
-        return num;
+        return ts.size()==0?1:ts.size();
     }
 
     /**
@@ -490,5 +541,91 @@ public class PacketReader {
         }
         Log.v(TAG, "sum / (count - 1) - " + (sum / (count - 1)));
         return (sum / (count - 1));
+    }
+    /**
+     * @author yuan
+     * 需要优化
+     * */
+    private int getAdvertisement(){
+    	ArrayList<Integer> serverport = new ArrayList<Integer>();
+    	int advbytes = 0;
+    	Http http = new Http();
+    	Tcp tcp = new Tcp();
+    	for(int i=0; i < packets.size();i++){
+    		JPacket p = packets.get(i);
+	    		if (p.hasHeader(Http.ID)){
+	                
+	                p.getHeader(http);
+	                String s = http.fieldValue(Request.Host);
+	                Integer res = rrMap.get(i);
+	                if (s != null && res != null) {
+	                    String get = s + http.fieldValue(Request.RequestUrl);
+	                    if (get.contains(".jpg") || get.contains(".png")){
+	                    	if (p.hasHeader(Tcp.ID)) {
+	                            
+	                            p.getHeader(tcp);
+	                            int portnum = tcp.destination();
+	                            if(portnum == 80){
+	                            	portnum = tcp.source();
+	                            }
+	                            if(!serverport.contains(portnum)){
+		                            serverport.add(Integer.valueOf(portnum));
+	                            }
+	                        }
+	                    }
+	                }
+	    		}
+    	}
+    	Log.i("aaa", "out1");
+    	for(int i=0; i < packets.size();i++){
+    		JPacket p = packets.get(i);
+    		if(p.hasHeader(Tcp.ID)){
+    			//Tcp tcp = new Tcp();
+    			p.getHeader(tcp);
+    			if(serverport.contains(tcp.destination()) || serverport.contains(tcp.source())){
+    				advbytes += p.getPacketWirelen();
+            		Log.i("ren", "Packets size is "+ p.getPacketWirelen());
+    			}
+    		}
+    	}
+    	Log.i("aaa", "out2");
+    	return advbytes;
+    }
+    /**
+     * @author yuan
+     * @return return a float num which means num%
+     * 
+     * */
+    private float getResrcEfficiency(){  //百分之
+    	int payloadbytes = 0;
+    	int totalbytes = 0;
+    	float effrate;
+    	Tcp tcp = new Tcp();
+    	Http http = new Http();
+    	for(int i=0; i < packets.size();i++){
+    		JPacket p = packets.get(i);
+    		if(p.hasHeader(Tcp.ID)){
+    			if(p.hasHeader(Http.ID)){
+    				p.getHeader(http);
+    				payloadbytes += http.getPayloadLength();
+    				Log.d("ren","payloadbytes is "+payloadbytes);
+    			}else{
+    	    		p.getHeader(tcp);
+    	    		payloadbytes += tcp.getPayloadLength();
+    				Log.d("ren","payloadbytes is "+payloadbytes);
+    			}
+    		}else if(p.hasHeader(Udp.ID)){
+    			
+    		}else{
+    			
+    		}
+    		totalbytes += p.getPacketWirelen();
+			Log.d("ren","totalbytes is "+totalbytes);
+    	}
+		Log.i("ren", "payload size is "+payloadbytes+"B.totalsize is "+totalbytes+" B");
+    	effrate = (float)payloadbytes/(float)totalbytes;
+    	float a = (float)Math.round(effrate*10000)/100; 
+		Log.i("ren", "effiticv is "+a);
+    	return a;
     }
 }

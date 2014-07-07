@@ -39,6 +39,7 @@ public class DumpHelper {
             .getExternalStorageDirectory().getPath() + "/";
     public static final String fileName = "capture.pcap";
     public static final String fileTcpdump = "/data/local/tcpdump";
+    public static final String filedir = "/data/local";
     public static final String cmdTcpdump = fileTcpdump + " -p -vv -U -s 0 -w "
             + fileOutPath + fileName + "\n";
 
@@ -285,7 +286,12 @@ public class DumpHelper {
     private void initTcpdump() {
         File file = new File(fileTcpdump);
         if (!file.exists()) {
-            Log.v("tcpdump", "no tcpdump file");
+        	Log.v("tcpdump", "no tcpdump file");
+        	try{
+        		Runtime.getRuntime().exec("chmod 777 "+filedir);
+        	}catch(Exception e){
+        		e.printStackTrace();
+        	}
             InputStream is = context.getResources().openRawResource(
                     R.raw.tcpdump);
             Log.v("tcpdump", "reading file from res/raw/ ...");

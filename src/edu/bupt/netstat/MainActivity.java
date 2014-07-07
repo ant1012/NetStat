@@ -353,7 +353,8 @@ public class MainActivity extends Activity implements OnClickListener {
 				break;
 			case ScoreStatisticsSuper.GAME:
 				if (map.get("app_package").toString().contains("game")
-						|| map.get("app_title").toString().contains("消除"))
+						|| map.get("app_title").toString().contains("消除")
+						|| map.get("app_title").toString().contains("斗地主"))
 					list.add(map);
 				break;
 			}

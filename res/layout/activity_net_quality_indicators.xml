@@ -220,7 +220,49 @@
                 android:hint="0"
                 android:textSize="18sp" />
         </LinearLayout>
-         
+        
+        <LinearLayout
+            android:id="@+id/layout_advertise"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Advertise:"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/textview_advertise"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:hint="0"
+                android:textSize="18sp" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/layout_reseffictive"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Resource Efficiency:"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/textview_resefficiency"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:hint="0"
+                android:textSize="18sp" />
+        </LinearLayout>
       
     </LinearLayout>
 
