@@ -13,7 +13,7 @@ public class WebScoreStatistics extends ScoreStatisticsSuper {
 
     public WebScoreStatistics() {
         this.scoreWeight = new ScoreWeight(0.0389, 0.0859, 0.138, 0.4039,
-                0.2857, 0.0476, 0, 0, 0, 0);
+                0.2857, 0.0476, 0, 0, 0, 0, 0, 0);
     }
 
     protected int dnsScore(int dns) { // unit: us

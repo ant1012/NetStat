@@ -20,6 +20,8 @@ public class ScoreWeight implements Parcelable {
     public double weightPacketlossScore;
     public double weightDownloadScore;
     public double weightMultithreadScore;
+    public double weightAdvertise;
+    public double weightEfficiency;
 
     public ScoreWeight() {
         this.weightDnsScore = 0;
@@ -38,7 +40,7 @@ public class ScoreWeight implements Parcelable {
             double weightRespScore, double weightLoadScore,
             double weightSpeedScore, double weightTrafficScore,
             double weightDelayjitterScore, double weightPacketlossScore,
-            double weightDownloadScore, double weightMultithreadScore) {
+            double weightDownloadScore, double weightMultithreadScore,double weightAdvertise,double weightEfficiency) {
         this.weightDnsScore = weightDnsScore;
         this.weightTcpScore = weightTcpScore;
         this.weightRespScore = weightRespScore;
@@ -49,6 +51,8 @@ public class ScoreWeight implements Parcelable {
         this.weightPacketlossScore = weightPacketlossScore;
         this.weightDownloadScore = weightDownloadScore;
         this.weightMultithreadScore = weightMultithreadScore;
+        this.weightAdvertise = weightAdvertise;
+        this.weightEfficiency = weightEfficiency;
     }
 
     public static final Parcelable.Creator<ScoreWeight> CREATOR = new Creator<ScoreWeight>() {

@@ -53,14 +53,15 @@ public class PacketReader {
     public float delayJitter;
     public long traffic;
     public int threadNum;
-    
+    public int advertise_num;
     public int advertise_traffic;
     public float res_efficiency;
     
     public HashMap<String, Integer> responseTime = new HashMap<String, Integer>();
     public HashMap<String, Integer> dnsTime = new HashMap<String, Integer>();
     public HashMap<Integer, Integer> rrMap = new HashMap<Integer, Integer>();
-
+    ArrayList<Integer> serverport = new ArrayList<Integer>();
+    
     static {
         System.loadLibrary("jnetpcap");
     }
@@ -100,6 +101,10 @@ public class PacketReader {
         listPackets();
         retTable = new boolean[packets.size()];
         rttMap = new HashMap<Integer, Integer>();
+        
+        pktTime = getPktTime();//
+        traffic = new File(pcapFileName).length();
+
         switch (pkgType) {
 			case ScoreStatisticsSuper.WEB:
 				avrDns = getDns();// dns时延
@@ -107,7 +112,7 @@ public class PacketReader {
 				avrRes = getHttpResponse();// 网页响应时延
 				avrTime = getAvrTime();// 网页下载时延以及下载文件时延
 				avrSpeed = getAvrSpeed();
-				traffic = new File(pcapFileName).length();
+//				traffic = new File(pcapFileName).length();
 				pktLoss = getRetTimes();// 丢包率？
 				break;
 			case ScoreStatisticsSuper.DOWNLOADING:
@@ -131,9 +136,10 @@ public class PacketReader {
 				avrRtt = getRtt();// tcp连接时延，网页连接时延
 				avrRes = getHttpResponse();// 网页响应时延
 				avrSpeed = getAvrSpeed();
-				traffic = new File(pcapFileName).length();
+//				traffic = new File(pcapFileName).length();
 				pktLoss = getRetTimes();// 丢包率？
 				advertise_traffic = getAdvertisement();//获取广告流量
+				advertise_num = getAdvertiseNum();
 			    res_efficiency = getResrcEfficiency();
 			default:
 		}
@@ -547,7 +553,6 @@ public class PacketReader {
      * 需要优化
      * */
     private int getAdvertisement(){
-    	ArrayList<Integer> serverport = new ArrayList<Integer>();
     	int advbytes = 0;
     	Http http = new Http();
     	Tcp tcp = new Tcp();
@@ -590,6 +595,13 @@ public class PacketReader {
     	}
     	Log.i("aaa", "out2");
     	return advbytes;
+    }
+    /**
+     * @author yuan
+     * get advertisement num
+     * */
+    private int getAdvertiseNum(){
+    	return serverport.size();
     }
     /**
      * @author yuan

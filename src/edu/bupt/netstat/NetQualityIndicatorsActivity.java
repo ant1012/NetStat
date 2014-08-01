@@ -325,7 +325,7 @@ public class NetQualityIndicatorsActivity extends Activity {
 				thread.setText(String.valueOf(reader.threadNum));
 				jitter.setText(String.valueOf(reader.delayJitter));
 				
-				advertise.setText(reader.advertise_traffic+" Bytes");
+				advertise.setText(reader.advertise_num+"");
 				res_efficiency.setText(reader.res_efficiency+"%");
 				
 				ss.setText("" + score);

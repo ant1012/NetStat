@@ -13,7 +13,7 @@ public class DownloadScoreStatistics extends ScoreStatisticsSuper {
 
     public DownloadScoreStatistics() {
         this.scoreWeight = new ScoreWeight(0.0484, 0.1082, 0, 0, 0.2813, 0, 0,
-                0.0938, 0.3882, 0.0802);
+                0.0938, 0.3882, 0.0802, 0, 0);
     }
 
     // dns connect delay score

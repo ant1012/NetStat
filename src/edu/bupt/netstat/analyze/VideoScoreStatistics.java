@@ -13,7 +13,7 @@ public class VideoScoreStatistics extends ScoreStatisticsSuper {
 
     public VideoScoreStatistics() {
         this.scoreWeight = new ScoreWeight(0.0355, 0.1015, 0.1621, 0, 0.0556,
-                0, 0.3676, 0.2778, 0, 0);
+                0, 0.3676, 0.2778, 0, 0, 0, 0);
     }
 
     protected int dnsScore(int dns) { // unit: us
