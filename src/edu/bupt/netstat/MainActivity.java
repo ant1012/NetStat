@@ -2,6 +2,7 @@ package edu.bupt.netstat;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import android.app.Activity;
@@ -60,8 +61,11 @@ public class MainActivity extends Activity implements OnClickListener {
 	private SimpleAdapter adapterPkgName;
 	private List<HashMap<String, Object>> appList;
 	private int appSelected = 0;
+	
+	private HashSet<String> ipList;
 
 	private DumpHelper helper;
+	private String[] ipArray;
 
 	/**
 	 * @author zzz
@@ -100,7 +104,7 @@ public class MainActivity extends Activity implements OnClickListener {
 					int arg2, long arg3) {
 				// int selectedItem = (String) spPkgType.getSelectedItem();
 				// Log.v("selectedItem", selectedItem);
-				appList = getInstalledApps(false, arg2);
+				appList = getInstalledApps(true, arg2);
 				selectApp(appList);
 			}
 
@@ -211,6 +215,10 @@ public class MainActivity extends Activity implements OnClickListener {
 					spPkgType.getSelectedItemPosition());
 			i.putExtra(NetQualityIndicatorsActivity.LOCALIP,
 					helper.getLocalIp());
+			if (ipList != null) {
+				ipArray = ipList.toArray(new String[0]);
+			}
+			i.putExtra("IPLIST", ipArray);
 			startActivity(i);
 			break;
 		case R.id.button_clear_cache:
@@ -231,11 +239,12 @@ public class MainActivity extends Activity implements OnClickListener {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case MSG_UPDATE_IPLIST:
-				if (helper.getIpSet().isEmpty()) {
+				ipList = helper.getIpSet();
+				if (ipList.isEmpty()) {
 					tvIpList.setText("Null");
 				} else {
 					StringBuilder sb = new StringBuilder();
-					for (String s : helper.getIpSet()) {
+					for (String s : ipList) {
 						sb.append(s).append("\n");
 					}
 					tvIpList.setText(sb.toString());
@@ -325,13 +334,15 @@ public class MainActivity extends Activity implements OnClickListener {
 			switch (appType) {
 			case ScoreStatisticsSuper.WEB:
 				if (map.get("app_title").toString().contains("浏览器")
-						|| map.get("app_title").toString().contains("Chrome"))
+						|| map.get("app_title").toString().contains("Chrome")
+						|| map.get("app_title").toString().contains("Browser"))
 					list.add(map);
 				break;
-			case ScoreStatisticsSuper.DOWNLOADING:
+			case ScoreStatisticsSuper.DOWNLOAD:
 				if (map.get("app_title").toString().contains("手机助手")
 						|| map.get("app_title").toString().contains("豌豆荚")
-						|| map.get("app_title").toString().contains("音乐")
+						|| (map.get("app_title").toString().contains("音乐")&&
+								!map.get("app_title").toString().contains("可视化"))
 						|| map.get("app_title").toString().contains("天天动听"))
 					list.add(map);
 				break;
@@ -339,24 +350,31 @@ public class MainActivity extends Activity implements OnClickListener {
 				if (map.get("app_package").toString().contains("youku")
 						|| map.get("app_package").toString().contains("video")
 						|| map.get("app_package").toString().contains("kankan")
-						|| map.get("app_package").toString().contains("live")
+						|| map.get("app_package").toString().contentEquals("live")
 						|| map.get("app_package").toString().contains("storm")
 						|| map.get("app_title").toString().contains("视频")
 						|| map.get("app_title").toString().contains("影视")
-						|| map.get("app_title").toString().contains("电视"))
+						|| map.get("app_title").toString().contains("电视")
+						|| map.get("app_title").toString().contains("播放器"))
 					list.add(map);
 				break;
-			case ScoreStatisticsSuper.TRADING:
-				if (map.get("app_package").toString().contains("taobao")
-						|| map.get("app_title").toString().contains("支付"))
+			case ScoreStatisticsSuper.TRADE:
+				if (map.get("app_title").toString().contains("支付"))
 					list.add(map);
 				break;
 			case ScoreStatisticsSuper.GAME:
 				if (map.get("app_package").toString().contains("game")
-						|| map.get("app_title").toString().contains("消除")
+						|| (map.get("app_title").toString().contains("天天")&&
+								!map.get("app_title").toString().contains("动听"))
 						|| map.get("app_title").toString().contains("斗地主"))
 					list.add(map);
 				break;
+			case ScoreStatisticsSuper.SOCIAL:
+				if (map.get("app_title").toString().contains("微信")
+						|| map.get("app_title").toString().contains("微博")
+						|| map.get("app_title").toString().contains("QQ")
+						|| map.get("app_title").toString().contains("易信"))
+					list.add(map);
 			}
 		}
 		return list;

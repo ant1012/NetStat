@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;  
 import java.text.DecimalFormat;
+import java.util.HashSet;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -62,8 +63,13 @@ public class NetQualityIndicatorsActivity extends Activity {
 	private TextView advertise;
 	private TextView res_efficiency;
 	private TextView ss;
+	private TextView secureIndex;
+	private TextView tradeTime;
 	private int score;
 	private ScoreStatisticsSuper statistics;
+	
+	private String[] ipList;
+
 	//private File file;
 
 	/**
@@ -77,6 +83,7 @@ public class NetQualityIndicatorsActivity extends Activity {
 		Intent from = getIntent();
 		localIP = from.getStringExtra(LOCALIP);
 		pkgType = from.getIntExtra(PKG_TYPE, 0);
+		ipList = from.getStringArrayExtra("IPLIST");
 		Log.v(TAG, "localIP - " + localIP);
 		Log.v(TAG, "pkgType - " + pkgType);
 
@@ -91,6 +98,8 @@ public class NetQualityIndicatorsActivity extends Activity {
 		View layoutJitter = (View) findViewById(R.id.layout_jitter);
 		View layoutAdvertise = (View) findViewById(R.id.layout_advertise);
 		View layoutResEfficiency = (View) findViewById(R.id.layout_reseffictive);
+		View layoutSecureIndex = (View) findViewById(R.id.layout_secureIndex);
+		View layouttradeTime = (View) findViewById(R.id.layout_tradeTime);
 		
 		switch (pkgType) {
 		case ScoreStatisticsSuper.WEB:
@@ -101,7 +110,7 @@ public class NetQualityIndicatorsActivity extends Activity {
 			layoutSpeed.setVisibility(View.VISIBLE);
 			layoutTraffic.setVisibility(View.VISIBLE);
 			break;
-		case ScoreStatisticsSuper.DOWNLOADING:
+		case ScoreStatisticsSuper.DOWNLOAD:
 			layoutDns.setVisibility(View.VISIBLE);
 			layoutTcpConnectionTime.setVisibility(View.VISIBLE);
 			layoutLoadTime.setVisibility(View.VISIBLE);
@@ -126,6 +135,22 @@ public class NetQualityIndicatorsActivity extends Activity {
 			layoutRetransmission.setVisibility(View.VISIBLE);
 			layoutAdvertise.setVisibility(View.VISIBLE);
 			layoutResEfficiency.setVisibility(View.VISIBLE);
+			break;
+		case ScoreStatisticsSuper.TRADE:
+			layoutDns.setVisibility(View.VISIBLE);
+			layoutTcpConnectionTime.setVisibility(View.VISIBLE);
+			layoutJitter.setVisibility(View.VISIBLE);
+			layoutRetransmission.setVisibility(View.VISIBLE);
+			layoutSecureIndex.setVisibility(View.VISIBLE);
+			layouttradeTime.setVisibility(View.VISIBLE);
+			layoutTraffic.setVisibility(View.VISIBLE);
+			break;
+		case ScoreStatisticsSuper.SOCIAL:
+			layoutDns.setVisibility(View.VISIBLE);
+			layoutTcpConnectionTime.setVisibility(View.VISIBLE);
+			layoutRetransmission.setVisibility(View.VISIBLE);
+			layoutTraffic.setVisibility(View.VISIBLE);
+			break;
 		default:
 		}
 
@@ -140,9 +165,12 @@ public class NetQualityIndicatorsActivity extends Activity {
 		jitter = (TextView) this.findViewById(R.id.textview_jitter);
 		advertise = (TextView) this.findViewById(R.id.textview_advertise);
 		res_efficiency = (TextView) this.findViewById(R.id.textview_resefficiency);
+		secureIndex = (TextView) this.findViewById(R.id.textview_secureIndex);
+		tradeTime = (TextView) this.findViewById(R.id.textview_tradeTime);
 		
 		ss = (TextView) this.findViewById(R.id.ss);
-		reader = PacketReader.getInstance();
+		reader = new PacketReader(ipList,localIP, DumpHelper.fileOutPath + DumpHelper.fileName);
+		
         statistics = ScoreStatisticsFactory.create(pkgType);
 
 		Button detButt = (Button) this.findViewById(R.id.detail);
@@ -323,11 +351,11 @@ public class NetQualityIndicatorsActivity extends Activity {
 				speed.setText(formatSpeed(8 * reader.avrSpeed));
 				traffic.setText(formatTraffic(reader.traffic));
 				thread.setText(String.valueOf(reader.threadNum));
-				jitter.setText(String.valueOf(reader.delayJitter));
-				
+				jitter.setText(String.valueOf(reader.delayJitter));				
 				advertise.setText(reader.advertise_num+"");
 				res_efficiency.setText(reader.res_efficiency+"%");
-				
+				secureIndex.setText(reader.ssl * 100 + "%");
+				tradeTime.setText(df.format(1e-6 * reader.tradeTime) + "s");
 				ss.setText("" + score);
 				progressDialog.cancel();
 				break;

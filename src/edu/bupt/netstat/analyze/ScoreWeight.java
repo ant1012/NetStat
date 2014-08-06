@@ -22,6 +22,8 @@ public class ScoreWeight implements Parcelable {
     public double weightMultithreadScore;
     public double weightAdvertise;
     public double weightEfficiency;
+    public double weightSecureScore;
+    public double weightTimeScore;
 
     public ScoreWeight() {
         this.weightDnsScore = 0;
@@ -34,13 +36,17 @@ public class ScoreWeight implements Parcelable {
         this.weightPacketlossScore = 0;
         this.weightDownloadScore = 0;
         this.weightMultithreadScore = 0;
+        this.weightSecureScore = 0;
+        this.weightTimeScore = 0;
     }
 
     public ScoreWeight(double weightDnsScore, double weightTcpScore,
             double weightRespScore, double weightLoadScore,
             double weightSpeedScore, double weightTrafficScore,
             double weightDelayjitterScore, double weightPacketlossScore,
-            double weightDownloadScore, double weightMultithreadScore,double weightAdvertise,double weightEfficiency) {
+            double weightDownloadScore, double weightMultithreadScore,
+            double weightAdvertise,double weightEfficiency,
+            double weightSecureScore,double weightTimeScore) {
         this.weightDnsScore = weightDnsScore;
         this.weightTcpScore = weightTcpScore;
         this.weightRespScore = weightRespScore;
@@ -53,6 +59,8 @@ public class ScoreWeight implements Parcelable {
         this.weightMultithreadScore = weightMultithreadScore;
         this.weightAdvertise = weightAdvertise;
         this.weightEfficiency = weightEfficiency;
+        this.weightSecureScore = weightSecureScore;
+        this.weightTimeScore = weightTimeScore;
     }
 
     public static final Parcelable.Creator<ScoreWeight> CREATOR = new Creator<ScoreWeight>() {
@@ -70,6 +78,8 @@ public class ScoreWeight implements Parcelable {
             w.weightPacketlossScore = source.readDouble();
             w.weightDownloadScore = source.readDouble();
             w.weightMultithreadScore = source.readDouble();
+            w.weightSecureScore = source.readDouble();
+            w.weightTimeScore = source.readDouble();
             return w;
         }
 
@@ -96,5 +106,7 @@ public class ScoreWeight implements Parcelable {
         arg0.writeDouble(weightPacketlossScore);
         arg0.writeDouble(weightDownloadScore);
         arg0.writeDouble(weightMultithreadScore);
+        arg0.writeDouble(weightSecureScore);
+        arg0.writeDouble(weightTimeScore);
     }
 }

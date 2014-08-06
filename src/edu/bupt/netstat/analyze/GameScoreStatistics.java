@@ -6,7 +6,7 @@ public class GameScoreStatistics extends ScoreStatisticsSuper{
 
 	public GameScoreStatistics(){
 	        this.scoreWeight = new ScoreWeight(0.0407, 0.1065, 0.1861, 0, 0.0527, 0.2687, 0,
-	        		0.0912, 0, 0, 0.1629, 0.0912);
+	        		0.0912, 0, 0, 0.1629, 0.0912, 0, 0);
 	}
 	 
 	protected int dnsScore(int dns) { // unit: us

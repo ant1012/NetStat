@@ -206,6 +206,90 @@
             android:gravity="right"
             android:textSize="18sp" />
     </LinearLayout>
+     <LinearLayout
+        android:id="@+id/layout_set_advertise"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/advertise"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/edittext_advertise"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:gravity="right"
+            android:textSize="18sp" />
+    </LinearLayout>
+     <LinearLayout
+        android:id="@+id/layout_set_ResEfficiency"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ResEfficiency"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/edittext_ResEfficiency"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:gravity="right"
+            android:textSize="18sp" />
+    </LinearLayout>
+      <LinearLayout
+        android:id="@+id/layout_set_SecureIndex"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/SecureIndex"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/edittext_SecureIndex"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:gravity="right"
+            android:textSize="18sp" />
+    </LinearLayout>
+     <LinearLayout
+        android:id="@+id/layout_set_tradeTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tradeTime"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/edittext_tradeTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:gravity="right"
+            android:textSize="18sp" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/button_set"

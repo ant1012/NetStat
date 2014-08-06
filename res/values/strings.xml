@@ -31,13 +31,19 @@
     <string name="total_traffic">Total Traffic:</string>
     <string name="thread_numbers">Thread Numbers:</string>
     <string name="delay_jitter">Delay Jitter:</string>
+    <string name="advertise">Advertise:</string>
+    <string name="ResEfficiency">ResEfficiency:</string>
+    <string name="SecureIndex">SecureIndex:</string>
+    <string name="tradeTime">TradeTime:</string>
+    
 
     <string-array name="pkg_types">
         <item>web</item>
-        <item>downloading</item>
+        <item>download</item>
         <item>video</item>
-        <item>trading</item>
+        <item>trad</item>
         <item>game</item>
+         <item>social</item>
     </string-array>
 
 </resources>

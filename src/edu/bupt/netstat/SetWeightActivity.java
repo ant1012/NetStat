@@ -30,6 +30,10 @@ public class SetWeightActivity extends Activity implements OnClickListener {
     private EditText etTraffic;
     private EditText etThread;
     private EditText etJitter;
+    private EditText etAdvertise;
+    private EditText etResEfficiency;
+    private EditText etSecureIndex;
+    private EditText ettradeTime;
 
     private Button btSubmit;
     private Button btCancel;
@@ -56,6 +60,10 @@ public class SetWeightActivity extends Activity implements OnClickListener {
         View layoutTraffic = (View) findViewById(R.id.layout_set_traffic);
         View layoutThread = (View) findViewById(R.id.layout_set_thread);
         View layoutJitter = (View) findViewById(R.id.layout_set_jitter);
+        View layoutAdvertise = (View) findViewById(R.id.layout_advertise);
+		View layoutResEfficiency = (View) findViewById(R.id.layout_reseffictive);
+		View layoutSecureIndex = (View) findViewById(R.id.layout_secureIndex);
+		View layouttradeTime = (View) findViewById(R.id.layout_tradeTime);
 
         switch (pkgType) {
         case ScoreStatisticsSuper.WEB:
@@ -66,7 +74,7 @@ public class SetWeightActivity extends Activity implements OnClickListener {
             layoutSpeed.setVisibility(View.VISIBLE);
             layoutTraffic.setVisibility(View.VISIBLE);
             break;
-        case ScoreStatisticsSuper.DOWNLOADING:
+        case ScoreStatisticsSuper.DOWNLOAD:
             layoutDns.setVisibility(View.VISIBLE);
             layoutTcpConnectionTime.setVisibility(View.VISIBLE);
             layoutLoadTime.setVisibility(View.VISIBLE);
@@ -82,6 +90,31 @@ public class SetWeightActivity extends Activity implements OnClickListener {
             layoutSpeed.setVisibility(View.VISIBLE);
             layoutRetransmission.setVisibility(View.VISIBLE);
             break;
+        case ScoreStatisticsSuper.GAME:
+			layoutDns.setVisibility(View.VISIBLE);
+			layoutTcpConnectionTime.setVisibility(View.VISIBLE);
+			layoutResponse.setVisibility(View.VISIBLE);
+			layoutSpeed.setVisibility(View.VISIBLE);
+			layoutTraffic.setVisibility(View.VISIBLE);
+			layoutRetransmission.setVisibility(View.VISIBLE);
+			layoutAdvertise.setVisibility(View.VISIBLE);
+			layoutResEfficiency.setVisibility(View.VISIBLE);
+			break;
+		case ScoreStatisticsSuper.TRADE:
+			layoutDns.setVisibility(View.VISIBLE);
+			layoutTcpConnectionTime.setVisibility(View.VISIBLE);
+			layoutJitter.setVisibility(View.VISIBLE);
+			layoutRetransmission.setVisibility(View.VISIBLE);
+			layoutSecureIndex.setVisibility(View.VISIBLE);
+			layouttradeTime.setVisibility(View.VISIBLE);
+			layoutTraffic.setVisibility(View.VISIBLE);
+			break;
+		case ScoreStatisticsSuper.SOCIAL:
+			layoutDns.setVisibility(View.VISIBLE);
+			layoutTcpConnectionTime.setVisibility(View.VISIBLE);
+			layoutRetransmission.setVisibility(View.VISIBLE);
+			layoutTraffic.setVisibility(View.VISIBLE);
+            break;
         default:
         }
 
@@ -94,6 +127,10 @@ public class SetWeightActivity extends Activity implements OnClickListener {
         etTraffic = (EditText) findViewById(R.id.edittext_traffic);
         etThread = (EditText) findViewById(R.id.edittext_thread);
         etJitter = (EditText) findViewById(R.id.edittext_jitter);
+        etAdvertise = (EditText) findViewById(R.id.edittext_advertise);
+        etResEfficiency = (EditText) findViewById(R.id.edittext_ResEfficiency);
+        etSecureIndex = (EditText) findViewById(R.id.edittext_SecureIndex);
+        ettradeTime = (EditText) findViewById(R.id.edittext_tradeTime);
 
         etRetransmission.setText(String
                 .valueOf(scoreWeight.weightPacketlossScore));
@@ -105,7 +142,11 @@ public class SetWeightActivity extends Activity implements OnClickListener {
         etTraffic.setText(String.valueOf(scoreWeight.weightTrafficScore));
         etThread.setText(String.valueOf(scoreWeight.weightMultithreadScore));
         etJitter.setText(String.valueOf(scoreWeight.weightDelayjitterScore));
-
+        etAdvertise.setText(String.valueOf(scoreWeight.weightAdvertise));
+        etResEfficiency.setText(String.valueOf(scoreWeight.weightEfficiency));
+        etSecureIndex.setText(String.valueOf(scoreWeight.weightSecureScore));
+        ettradeTime.setText(String.valueOf(scoreWeight.weightTimeScore));
+        
         btSubmit = (Button) findViewById(R.id.button_set);
         btCancel = (Button) findViewById(R.id.button_cancel);
         btSubmit.setOnClickListener(this);
@@ -142,6 +183,10 @@ public class SetWeightActivity extends Activity implements OnClickListener {
                     .getText().toString());
             scoreWeight.weightDelayjitterScore = Double.parseDouble(etJitter
                     .getText().toString());
+            scoreWeight.weightAdvertise = Double.parseDouble(etAdvertise.getText().toString());
+            scoreWeight.weightEfficiency = Double.parseDouble(etResEfficiency.getText().toString());
+            scoreWeight.weightSecureScore = Double.parseDouble(etSecureIndex.getText().toString());
+            scoreWeight.weightTimeScore = Double.parseDouble(ettradeTime.getText().toString());
 
             intent.putExtra(NetQualityIndicatorsActivity.SET_WEIGHT,
                     scoreWeight);
