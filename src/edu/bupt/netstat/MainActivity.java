@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -61,7 +62,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	private SimpleAdapter adapterPkgName;
 	private List<HashMap<String, Object>> appList;
 	private int appSelected = 0;
-	
+
 	private HashSet<String> ipList;
 
 	private DumpHelper helper;
@@ -329,51 +330,49 @@ public class MainActivity extends Activity implements OnClickListener {
 			HashMap<String, Object> map = new HashMap<String, Object>();
 			map.put("app_title", label + " " + version);
 			map.put("app_package", packageName);
-			// map.put("app_icon", icon);
 			Log.v(TAG, "find package " + packageName);
+			String app_name = map.get("app_title").toString();
+			String package_name = map.get("app_package").toString();
 			switch (appType) {
 			case ScoreStatisticsSuper.WEB:
-				if (map.get("app_title").toString().contains("浏览器")
-						|| map.get("app_title").toString().contains("Chrome")
-						|| map.get("app_title").toString().contains("Browser"))
+				if (app_name.contains("浏览器") || app_name.contains("Chrome")
+						|| app_name.contains("Browser")
+						|| app_name.contains("互联网"))
 					list.add(map);
 				break;
 			case ScoreStatisticsSuper.DOWNLOAD:
-				if (map.get("app_title").toString().contains("手机助手")
-						|| map.get("app_title").toString().contains("豌豆荚")
-						|| (map.get("app_title").toString().contains("音乐")&&
-								!map.get("app_title").toString().contains("可视化"))
-						|| map.get("app_title").toString().contains("天天动听"))
+				if (app_name.contains("手机助手")
+						|| app_name.contains("应用宝")
+						|| (app_name.contains("音乐") && !app_name
+								.contains("可视化")) 
+						||app_name.contains("豌豆荚")|| app_name.contains("天天动听"))
 					list.add(map);
 				break;
 			case ScoreStatisticsSuper.VIDEO:
-				if (map.get("app_package").toString().contains("youku")
-						|| map.get("app_package").toString().contains("video")
-						|| map.get("app_package").toString().contains("kankan")
-						|| map.get("app_package").toString().contentEquals("live")
-						|| map.get("app_package").toString().contains("storm")
-						|| map.get("app_title").toString().contains("视频")
-						|| map.get("app_title").toString().contains("影视")
-						|| map.get("app_title").toString().contains("电视")
-						|| map.get("app_title").toString().contains("播放器"))
+				if (package_name.contains("youku")
+						|| package_name.contains("video")
+						|| package_name.contains("kankan")
+						|| package_name.contains("pplive")
+						|| package_name.contains("storm")
+						|| app_name.contains("看看") || app_name.contains("视频")
+						|| app_name.contains("优酷") || app_name.contains("暴风"))
 					list.add(map);
 				break;
 			case ScoreStatisticsSuper.TRADE:
-				if (map.get("app_title").toString().contains("支付"))
+				if (app_name.contains("支付宝"))
 					list.add(map);
 				break;
 			case ScoreStatisticsSuper.GAME:
-				if (map.get("app_package").toString().contains("game")
-						|| (map.get("app_title").toString().contains("天天")&&
-								!map.get("app_title").toString().contains("动听"))
-						|| map.get("app_title").toString().contains("斗地主"))
+				if (package_name.contains("game")
+						|| (app_name.contains("天天") && !app_name.contains("动听"))
+						|| app_name.contains("斗地主"))
 					list.add(map);
 				break;
 			case ScoreStatisticsSuper.SOCIAL:
-				if (map.get("app_title").toString().contains("微信")
-						|| map.get("app_title").toString().contains("微博")
-						|| map.get("app_title").toString().contains("QQ")
-						|| map.get("app_title").toString().contains("易信"))
+				if (app_name.contains("微信") || app_name.contains("微博")
+						|| package_name.contains("mobileqq")|| package_name.contains("tencent.android.pad")
+						|| app_name.contains("QQi")|| app_name.contains("QQ哦")
+						|| app_name.contains("QQ轻聊版"))
 					list.add(map);
 			}
 		}

@@ -10,10 +10,14 @@ import android.util.Log;
  */
 public class DownloadScoreStatistics extends ScoreStatisticsSuper {
     private final static String TAG = "DownloadScoreStatistics";
-
+    /**
+     * 修改download score 和 speed score 参数
+     * 原来是0.2813和0.3882
+     * 修改为 0.4013和0.2682
+     */
     public DownloadScoreStatistics() {
-        this.scoreWeight = new ScoreWeight(0.0484, 0.1082, 0, 0, 0.2813, 0, 0,
-                0.0938, 0.3882, 0.0802, 0, 0, 0, 0);
+        this.scoreWeight = new ScoreWeight(0.0484, 0.1082, 0, 0, 0.4013, 0, 0,
+                0.0938, 0.2682, 0.0802, 0, 0, 0, 0);
     }
 
     protected int dnsScore(int dns) { // unit: us
@@ -35,11 +39,11 @@ public class DownloadScoreStatistics extends ScoreStatisticsSuper {
     }
 
     protected int multiThreadScore(int threadNum) {
-        return threadNum >= 10 ? 100 : 10 * threadNum;
+        return threadNum >= 10 ? 100 : (threadNum * 5 + 75);
     }
 
     protected int pktlossScore(float plr) { // unit: B
-        return (int) (1 - plr) * 100;
+        return (int) ((1 - plr) * 100);
     }
 
     @Override
@@ -50,6 +54,12 @@ public class DownloadScoreStatistics extends ScoreStatisticsSuper {
                 + this.scoreWeight.weightMultithreadScore + " "
                 + this.scoreWeight.weightSpeedScore + " "
                 + this.scoreWeight.weightPacketlossScore);
+        Log.v("trade dnsScore", " " + dnsScore(reader.avrDns));
+		Log.v("trade tcpScore", " " + tcpScore(reader.avrRtt));
+		Log.v("trade downloadScore", " " + downloadScore(reader.avrTime));
+		Log.v("trade multiThreadScore", " " +  multiThreadScore(reader.threadNum));
+		Log.v("trade speedScore", " " + speedScore(reader.avrSpeed));
+		Log.v("trade pktlossScore", " " + pktlossScore(reader.pktLoss));
 
         return (int) (this.scoreWeight.weightDnsScore * dnsScore(reader.avrDns)
                 + this.scoreWeight.weightTcpScore * tcpScore(reader.avrRtt)

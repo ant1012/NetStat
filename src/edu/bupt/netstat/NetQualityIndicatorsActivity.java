@@ -7,8 +7,10 @@ import java.io.IOException;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;  
 import java.text.DecimalFormat;
-import java.util.HashSet;
+import java.util.ArrayList;
+import org.jnetpcap.packet.JPacket;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -48,7 +50,8 @@ public class NetQualityIndicatorsActivity extends Activity {
 
 	private ProgressDialog progressDialog;
 
-	private PacketReader reader;
+	public PacketReader reader;
+	public ArrayList<JPacket> packet;
 	private String localIP;
 	private int pkgType;
 	private TextView loss;
@@ -170,7 +173,6 @@ public class NetQualityIndicatorsActivity extends Activity {
 		
 		ss = (TextView) this.findViewById(R.id.ss);
 		reader = new PacketReader(ipList,localIP, DumpHelper.fileOutPath + DumpHelper.fileName);
-		
         statistics = ScoreStatisticsFactory.create(pkgType);
 
 		Button detButt = (Button) this.findViewById(R.id.detail);
@@ -182,12 +184,13 @@ public class NetQualityIndicatorsActivity extends Activity {
 				Intent intent = new Intent();
 				intent.setClass(NetQualityIndicatorsActivity.this,
 						PacketDetailsActivity.class);
+				intent.putExtra("localIp",localIP);
+				intent.putExtra("IPLIST", ipList);
 				startActivity(intent);
 			}
 		});
 		
 		Button saveBut = (Button) this.findViewById(R.id.save);
-		//File file = new File(Environment.getExternalStorageDirectory(), "reslut.txt");
 		saveBut.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -267,7 +270,9 @@ public class NetQualityIndicatorsActivity extends Activity {
     	.append("Thread Numbers"+"\t")
     	.append("Advertisement"+"\t")
     	.append("Resource Efficiency"+"\t")
-    	.append("Score"+"\t").append("App Type"+"\t").append("netWork_Type");
+    	.append("SecureIndex"+"\t")
+    	.append("TradeTime"+"\t")
+    	.append("Score"+"\t").append("App Type"+"\t");
     	
     	StringBuilder sbDataCommon = new StringBuilder();
     	sbDataCommon.append("\n"+loss.getText()+"\t").append(dns.getText()+"\t")
@@ -280,29 +285,41 @@ public class NetQualityIndicatorsActivity extends Activity {
     		appType="web";
     		sbData = sbDataCommon.append(resp.getText()+"\t").append(load.getText()+"\t").append(speed.getText()+"\t")
     		.append(traffic.getText() +"\t").append("--"+"\t").append("--"+"\t").append("--"+"\t").append("--"+"\t")
-        	.append(ss.getText()+"\t").append(appType+"\t").append("null");
+    		.append("--"+"\t").append("--"+"\t")
+        	.append(ss.getText()+"\t").append(appType+"\t");
     		break;
     	case 1:
     		appType="download";
     		sbData = sbDataCommon.append("--"+"\t").append(load.getText()+"\t").append(speed.getText()+"\t").append("--"+"\t")
-    		.append("--"+"\t").append(thread.getText()+"\t").append("--"+"\t").append("--"+"\t")
-        	.append(ss.getText()+"\t").append(appType+"\t").append("null");
+    		.append("--"+"\t").append(thread.getText()+"\t").append("--"+"\t").append("--"+"\t").append("--"+"\t").append("--"+"\t")
+        	.append(ss.getText()+"\t").append(appType+"\t");
     		break;
     	case 2:
     		appType="video";
     		sbData = sbDataCommon.append(resp.getText()+"\t").append("--"+"\t").append(speed.getText()+"\t").append("--"+"\t")
-    		.append(jitter.getText()+"\t").append("--"+"\t").append("--"+"\t").append("--"+"\t")
-        	.append(ss.getText()+"\t").append(appType+"\t").append("null");
+    		.append(jitter.getText()+"\t").append("--"+"\t").append("--"+"\t").append("--"+"\t").append("--"+"\t").append("--"+"\t")
+        	.append(ss.getText()+"\t").append(appType+"\t");
     		break;
     	case 3:
     		appType="trading";
+    		sbData = sbDataCommon.append("--"+"\t").append("--"+"\t").append("--"+"\t").append(traffic.getText()+"\t")
+    	    		.append(jitter.getText()+"\t").append("--"+"\t").append("--"+"\t").append("--"+"\t")
+    	    		.append(secureIndex.getText()+"\t").append(tradeTime.getText()+"\t").append(ss.getText()+"\t")
+    	    		.append(appType+"\t");
     		break;
     	case 4:
     		appType="game";
     		sbData = sbDataCommon.append(resp.getText()+"\t").append("--"+"\t").append(speed.getText()+"\t").append(traffic.getText()+"\t")
     	    		.append("--"+"\t").append("--"+"\t").append(advertise.getText()+"\t").append(res_efficiency.getText()+"\t")
-    	        	.append(ss.getText()+"\t").append(appType+"\t").append("null");
+    	    		.append("--"+"\t").append("--"+"\t")
+    	        	.append(ss.getText()+"\t").append(appType+"\t");
     		break;
+    	case 5:
+    		appType="social";
+    		sbData = sbDataCommon.append("--"+"\t").append("--"+"\t").append("--"+"\t").append(traffic.getText()+"\t")
+    	    		.append("--"+"\t").append("--"+"\t").append("--"+"\t").append("--"+"\t")
+    	    		.append("--"+"\t").append("--"+"\t")
+    	        	.append(ss.getText()+"\t").append(appType+"\t");
     	default:
     	}
         try {
@@ -337,6 +354,7 @@ public class NetQualityIndicatorsActivity extends Activity {
 	 * @author zzz
 	 * 
 	 */
+	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
 
 		@Override

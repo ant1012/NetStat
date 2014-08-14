@@ -1,4 +1,7 @@
 package edu.bupt.netstat.analyze;
+
+import android.util.Log;
+
 /**
  * TradeScoreStatistics
  * @author yyl
@@ -30,7 +33,7 @@ public class TradeScoreStatistics extends ScoreStatisticsSuper {
     	return (int) (19.47 * Math.log(180 * ssl));
     }
     protected int tradeTimeScore(float time){ 
-         return (int) (time > 0 ? 99.1 * Math.exp(-0.04665 * time * 1e-6) : 0);  
+        return (int) (100 - time * 1e-6 / 6);  
     }
     protected int trafficScore(long traffic){// unit: B
     	float a = (float) (traffic / 1024.0);
@@ -40,6 +43,14 @@ public class TradeScoreStatistics extends ScoreStatisticsSuper {
 	@Override
 	public int totalScore(PacketReader reader) {
 		// TODO Auto-generated method stub
+		Log.v("trade dnsScore", " " + dnsScore(reader.avrDns));
+		Log.v("trade tcpScore", " " + tcpScore(reader.avrRtt));
+		Log.v("trade trafficScore", " " + trafficScore(reader.traffic));
+		Log.v("trade delayJitterScore", " " + delayJitterScore(reader.delayJitter));
+		Log.v("trade pktLossScore", " " + pktLossScore(reader.pktLoss));
+		Log.v("trade secureScore", " " + secureScore(reader.ssl));
+		Log.v("trade tradeTimeScore", " " + tradeTimeScore(reader.tradeTime));
+
 		return (int) (this.scoreWeight.weightDnsScore * dnsScore(reader.avrDns)
                 + this.scoreWeight.weightTcpScore * tcpScore(reader.avrRtt)
                 + this.scoreWeight.weightTrafficScore * trafficScore(reader.traffic)

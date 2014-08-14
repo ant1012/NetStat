@@ -45,14 +45,14 @@ public class PacketReader {
 	public int avrTime;
 	public long avrSpeed;
 	public float delayJitter;
-	public long traffic;
+	public long traffic = 0;
 	public int threadNum;
 	public int advertise_num;
 	public int advertise_traffic;
 	public float res_efficiency;
 	public float ssl;
 	public float tradeTime = 0;
-	private  static int ssl_num = 0;
+	private int ssl_num = 0;
 
 	public HashMap<String, Integer> responseTime = new HashMap<String, Integer>();
 	public HashMap<String, Integer> dnsTime = new HashMap<String, Integer>();
@@ -98,11 +98,11 @@ public class PacketReader {
 	 */
 	public static PacketReader getInstance() {
 		if (instance == null) {
-//			synchronized (PacketReader.class) {
-//				if (instance == null) {
+			synchronized (PacketReader.class) {
+				if (instance == null) {
 					instance = new PacketReader();
-//				}
-//			}
+				}
+			}
 		}
 		return instance;
 	}
@@ -115,14 +115,14 @@ public class PacketReader {
 			OnReadComplete onReadComplete, int pkgType) {
 		//this.localIP = localIP;
 		//this.pcapFileName = pcapFileName;
-
-		//packets = new ArrayList<JPacket>();
-		//listPackets();
+//
+//		packets = new ArrayList<JPacket>();
+//		listPackets();
 		retTable = new boolean[packets.size()];
 		rttMap = new HashMap<Integer, Integer>();
 
 		pktTime = getPktTime();//
-		traffic = new File(pcapFileName).length();
+		traffic = getTraffic();
 
 		switch (pkgType) {
 		case ScoreStatisticsSuper.WEB:
@@ -164,7 +164,7 @@ public class PacketReader {
 			avrRtt = getRtt();// tcp连接时延，网页连接时延
 			delayJitter = getDelayJitter();
 			pktLoss = getRetTimes();// 丢包率
-			traffic = new File(pcapFileName).length();
+			//traffic = new File(pcapFileName).length();
 			ssl = getSSL();// 安全系数
 			tradeTime = getTradeTime();
 			break;
@@ -172,7 +172,7 @@ public class PacketReader {
 			avrDns = getDns();// dns时延
 			avrRtt = getRtt();// tcp连接时延，网页连接时延,发送时延
 			pktLoss = getRetTimes();// 丢包率
-			traffic = new File(pcapFileName).length();
+			//traffic = new File(pcapFileName).length();
 			break;
 		default:
 		}
@@ -191,6 +191,7 @@ public class PacketReader {
 
 			@Override
 			public void nextPacket(JPacket packet, String user) {
+				Log.i("PktSize", " " + packet.getPacketWirelen());
 				if (filterByIp(packet, ipList)){
 					packets.add(packet);
 				}
@@ -692,7 +693,9 @@ public class PacketReader {
 							|| ((id2[0] << 8) & 0xFF00 | id2[1] & 0xFF) == 0x0301) {
 						Log.i("SSL ", " " + (i + 1));
 						cnt++;
-						ssl_num = i;
+						if (ssl_num == 0) {
+							ssl_num = i;
+						}
 						if (rrMap.containsKey(i) || rrMap.containsValue(i)) {
 							cnt++;
 						}
@@ -719,4 +722,13 @@ public class PacketReader {
 		}
 		return tradeTime;
 	}
+	
+	private long getTraffic() {
+		long sum = 0;
+		for (JPacket p : packets) {
+			sum += p.getPacketWirelen();
+		}
+		return sum;
+	}
+	
 }

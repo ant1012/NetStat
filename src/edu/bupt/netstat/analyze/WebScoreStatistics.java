@@ -39,7 +39,7 @@ public class WebScoreStatistics extends ScoreStatisticsSuper {
     }
 
     protected int trafficScore(long traffic) { // unit: B
-        return (int) (traffic > 0 ? 100 * Math.exp(-0.00028 * traffic) : 0);
+        return (int) (traffic > 0 ? 100 * Math.exp(-0.000002 * traffic) : 0);
     }
 
     @Override
@@ -50,7 +50,12 @@ public class WebScoreStatistics extends ScoreStatisticsSuper {
                 + this.scoreWeight.weightLoadScore + " "
                 + this.scoreWeight.weightSpeedScore + " "
                 + this.scoreWeight.weightTrafficScore);
-
+        Log.v("web dnsScore", " " + dnsScore(reader.avrDns));
+		Log.v("web tcpScore", " " + tcpScore(reader.avrRtt));
+		Log.v("web RespScore", " " + respScore(reader.avrRes));
+		Log.v("web LoadScore", " " +  loadScore(reader.avrTime));
+		Log.v("web speedScore", " " + speedScore(reader.avrSpeed));
+		Log.v("web TrafficScore", " " + trafficScore(reader.traffic));
         return (int) (this.scoreWeight.weightDnsScore * dnsScore(reader.avrDns)
                 + this.scoreWeight.weightTcpScore * tcpScore(reader.avrRtt)
                 + this.scoreWeight.weightRespScore * respScore(reader.avrRes)
